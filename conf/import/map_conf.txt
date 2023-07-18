@@ -1,0 +1,14 @@
+// Server Communication username and password.
+userid: ragnasplash
+passwd: splashragna
+
+// Character Server IP
+// The map server connects to the character server using this IP address.
+// NOTE: This is useful when you are running behind a firewall or are on
+// a machine with multiple interfaces.
+char_ip: 127.0.0.1
+
+// Map Server IP
+// The IP address which clients will use to connect.
+// Set this to what your server's public IP address is.
+map_ip: 127.0.0.1

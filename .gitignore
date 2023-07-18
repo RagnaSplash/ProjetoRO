@@ -65,8 +65,6 @@ Thumbs.db
 /db/import
 
 # /conf/
-/conf/import
-/conf/msg_conf/import
 
 # /lib
 /lib

@@ -1,0 +1,5 @@
+// log_filter: 1 = logs ANY items
+log_filter: 1
+
+// log_chat: 63 = logs everything
+log_chat: 63

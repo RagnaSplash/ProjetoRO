@@ -1,0 +1,5 @@
+// IP rules
+//   allow : Accepts connections from the ip range (even if flagged as DDoS)
+
+allow: 127.0.0.1
+allow: 192.168.0.0/16

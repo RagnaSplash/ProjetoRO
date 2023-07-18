@@ -1,0 +1,31 @@
+// Server Communication username and password.
+userid: ragnasplash
+passwd: splashragna
+
+server_name: Ragna Splash
+
+// Login Server IP
+// The character server connects to the login server using this IP address.
+// NOTE: This is useful when you are running behind a firewall or are on
+// a machine with multiple interfaces.
+login_ip: 127.0.0.1
+
+// Character Server IP
+// The IP address which clients will use to connect.
+// Set this to what your server's public IP address is.
+char_ip: 127.0.0.1
+
+// Starting point for new characters.
+start_point: iz_int,18,26
+
+// Amount of time in seconds by which the character deletion is delayed.
+char_del_delay: 10
+
+// Restrict character deletion by email address or birthdate.
+char_del_option: 1
+
+// Restrict character deletion as long as he is still in a party or guild.
+char_del_restriction: 0
+
+// Pincode system
+pincode_enabled: no
