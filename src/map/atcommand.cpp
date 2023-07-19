@@ -8456,9 +8456,11 @@ ACMD_FUNC(rates)
 	nullpo_ret(sd);
 	memset(buf, '\0', sizeof(buf));
 
-	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1298), // Experience rates: Base %.2fx / Job %.2fx
+	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1298), // Experience rates: Base %.2fx / Job %.2fx / MvP %.2fx / Quest %.2fx
 		(battle_config.base_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.,
-		(battle_config.job_exp_rate + (pc_isvip(sd) ? (battle_config.vip_job_exp_increase * battle_config.job_exp_rate) / 100 : 0)) / 100.);
+		(battle_config.job_exp_rate + (pc_isvip(sd) ? (battle_config.vip_job_exp_increase * battle_config.job_exp_rate) / 100 : 0)) / 100.,
+		(battle_config.mvp_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.,
+		(battle_config.quest_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.);
 	clif_displaymessage(fd, buf);
 	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1299), // Normal Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
 		(battle_config.item_rate_common + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common) / 100 : 0)) / 100.,
@@ -8474,7 +8476,7 @@ ACMD_FUNC(rates)
 		(battle_config.item_rate_equip_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip_boss) / 100 : 0)) / 100.,
 		(battle_config.item_rate_card_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card_boss) / 100 : 0)) / 100.);
 	clif_displaymessage(fd, buf);
-	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1024), // MVP Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
+	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,27), // MVP Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
 		(battle_config.item_rate_common_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common_mvp) / 100 : 0)) / 100.,
 		(battle_config.item_rate_heal_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal_mvp) / 100 : 0)) / 100.,
 		(battle_config.item_rate_use_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use_mvp) / 100 : 0)) / 100.,

@@ -1408,10 +1408,11 @@
 1297: Digite o tempo em minutos (uso: @mutearea/@stfu <tempo em minutos>).
 
 // @rates
-1298: Taxa de experiência: Base %.2fx / Classe %.2fx
-1299: Taxa de drop normal: Comum %.2fx / Cura %.2fx / Utilizável %.2fx / Equipamento %.2fx / Carta %.2fx
-1300: Taxa de drop de chefes: Comum %.2fx / Cura %.2fx / Utilizável %.2fx / Equipamento %.2fx / Carta %.2fx
-1301: Outras taxas de drop: MvP %.2fx / Baseado em Cartas %.2fx / Tesouro %.2fx
+1298: TAXA DE EXPERIÊNCIA: Base %.2fx / Classe %.2fx / MvP %.2fx / Quest %.2fx
+1299: TAXA DE DROP NORMAL: Comum %.2fx / Cura %.2fx / Utilizável %.2fx / Equipamento %.2fx / Carta %.2fx
+1300: TAXA DE DROP MINI BOSS: Comum %.2fx / Cura %.2fx / Utilizável %.2fx / Equipamento %.2fx / Carta %.2fx
+27: TAXA DE DROP MVP: Comum %.2fx / Cura %.2fx / Utilizável %.2fx / Equipamento %.2fx / Carta %.2fx
+1301: OUTRAS TAXAS DE DROPS: Recompensa MvP %.2fx / Baseado em Cartas %.2fx / Tesouro %.2fx
 
 // @me
 1302: Digite uma mensagem (uso: @me <mensagem>).
@@ -1697,4 +1698,4 @@
 1504: Você entrou em uma Zona PK (segura até o nível %d).
 
 //Custom translations
-import: conf/msg_conf/import/map_msg_por_conf.txt
+//import: conf/msg_conf/import/map_msg_por_conf.txt
