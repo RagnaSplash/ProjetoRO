@@ -6889,7 +6889,7 @@ BUILDIN_FUNC(cutin)
 {
 	TBL_PC* sd;
 
-	if( !script_rid2sd(sd) )
+	if(!script_charid2sd(4, sd))
 		return SCRIPT_CMD_SUCCESS;
 
 	clif_cutin(sd,script_getstr(st,2),script_getnum(st,3));
@@ -27032,7 +27032,7 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(delitemidx,"i??"),
 	BUILDIN_DEF2(enableitemuse,"enable_items",""),
 	BUILDIN_DEF2(disableitemuse,"disable_items",""),
-	BUILDIN_DEF(cutin,"si"),
+	BUILDIN_DEF(cutin,"si?"),
 	BUILDIN_DEF(viewpoint,"iiiii?"),
 	BUILDIN_DEF(viewpointmap, "siiiii"),
 	BUILDIN_DEF(heal,"ii?"),
