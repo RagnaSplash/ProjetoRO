@@ -1,0 +1,27 @@
+//===== rAthena Script ======================================= 
+prontera,0,0,0	script	SetRankingIcon	-1,{
+	
+
+OnInit: 
+	startnpctimer;
+end;    
+
+
+OnTimer1: 
+	function rankingIcon;
+	rankingIcon("rank1",1);
+	setnpctimer 0;
+end; 
+
+function	rankingIcon	{
+	freeloop(true);
+	.@filename$ = getarg(0);
+	.@position = getarg(1);
+	.@s = getunits(BL_PC,.@SD);
+	for(.@i=0;.@i<.@s;.@i++){
+		if((.@cid = convertpcinfo(.@SD[.@i],CPC_CHAR)))
+			cutin(.@filename$,.@position,.@cid);
+	}
+	return;
+}
+}
