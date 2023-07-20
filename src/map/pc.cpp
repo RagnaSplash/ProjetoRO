@@ -10746,7 +10746,7 @@ bool pc_jobchange(map_session_data *sd,int job, char upper)
 	}
 
 	// Give or reduce trait status points
-	if ((b_class & JOBL_FOURTH) && !(previous_class & JOBL_FOURTH)) {// Change to a 4th job.
+	if ((b_class & JOBL_UPPER) && !(previous_class & JOBL_UPPER)) {// Change to a 4th job.
 		sd->status.trait_point += battle_config.trait_points_job_change;
 		clif_updatestatus(sd, SP_TRAITPOINT);
 		clif_updatestatus(sd, SP_UPOW);
@@ -10755,7 +10755,7 @@ bool pc_jobchange(map_session_data *sd,int job, char upper)
 		clif_updatestatus(sd, SP_USPL);
 		clif_updatestatus(sd, SP_UCON);
 		clif_updatestatus(sd, SP_UCRT);
-	} else if (!(b_class & JOBL_FOURTH) && (previous_class & JOBL_FOURTH)) {// Change to a non 4th job.
+	} else if (!(b_class & JOBL_UPPER) && (previous_class & JOBL_UPPER)) {// Change to a non 4th job.
 		if (sd->status.trait_point < battle_config.trait_points_job_change) {
 			// Player may have already used the trait status points. Force a reset.
 			pc_resetstate(sd);
@@ -14037,7 +14037,7 @@ void JobDatabase::loadingFinished() {
 		}
 
 		// Set trait status limit
-		if( class_ & JOBL_FOURTH ){
+		if( class_ & JOBL_UPPER ){
 			max = battle_config.max_trait_parameter;
 		}else{
 			max = 0;

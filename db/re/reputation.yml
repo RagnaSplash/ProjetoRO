@@ -54,6 +54,11 @@ Body:
     Variable: RepPointsIsgard
     Minimum: -3000
     Maximum: 3000
+  - Id: 5
+    Name: Nivel Max
+    Variable: RepLvlMax
+    Minimum: -10
+    Maximum: 10
 
 Footer:
   Imports:

@@ -104,9 +104,6 @@ Body:
       Bard: true
       Dancer: true
       Crusader2: true
-      Super_Novice: true
-      Gunslinger: true
-      Ninja: true
       Baby: true
       Baby_Swordman: true
       Baby_Mage: true
@@ -129,17 +126,7 @@ Body:
       Baby_Bard: true
       Baby_Dancer: true
       Baby_Crusader2: true
-      Super_Baby: true
-      Taekwon: true
-      Star_Gladiator: true
-      Star_Gladiator2: true
-      Soul_Linker: true
-      Baby_Ninja: true
       Baby_Taekwon: true
-      Baby_Star_Gladiator: true
-      Baby_Soul_Linker: true
-      Baby_Gunslinger: true
-      Baby_Star_Gladiator2: true
     MaxBaseLevel: 99
     BaseExp:
       - Level: 1
@@ -363,7 +350,20 @@ Body:
       Clown: true
       Gypsy: true
       Paladin2: true
-    MaxBaseLevel: 99
+      Super_Novice: true
+      Gunslinger: true
+      Ninja: true
+      Super_Baby: true
+      Taekwon: true
+      Star_Gladiator: true
+      Star_Gladiator2: true
+      Soul_Linker: true
+      Baby_Ninja: true
+      Baby_Star_Gladiator: true
+      Baby_Soul_Linker: true
+      Baby_Gunslinger: true
+      Baby_Star_Gladiator2: true
+    MaxBaseLevel: 110
     BaseExp:
       - Level: 1
         Exp: 600
@@ -563,6 +563,28 @@ Body:
         Exp: 6800000
       - Level: 99
         Exp: 99999999
+      - Level: 100
+        Exp: 13542002
+      - Level: 101
+        Exp: 14408700
+      - Level: 102
+        Exp: 15330850
+      - Level: 103
+        Exp: 16312020
+      - Level: 104
+        Exp: 17355980
+      - Level: 105
+        Exp: 18466760
+      - Level: 106
+        Exp: 19648630
+      - Level: 107
+        Exp: 20906140
+      - Level: 108
+        Exp: 22244130
+      - Level: 109
+        Exp: 23667750
+      - Level: 110
+        Exp: 50000000
   - Jobs:
       Super_Novice_E: true
       Super_Baby_E: true
@@ -1437,7 +1459,7 @@ Body:
   - Jobs:
       Summoner: true
       Baby_Summoner: true
-    MaxBaseLevel: 200
+    MaxBaseLevel: 110
     BaseExp:
       - Level: 1
         Exp: 55

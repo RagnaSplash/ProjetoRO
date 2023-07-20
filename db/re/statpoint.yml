@@ -232,26 +232,37 @@ Body:
     Points: 1273
   - Level: 100
     Points: 1295
+    TraitPoints: 1
   - Level: 101
     Points: 1318
+    TraitPoints: 2
   - Level: 102
     Points: 1341
+    TraitPoints: 3
   - Level: 103
     Points: 1364
+    TraitPoints: 4
   - Level: 104
     Points: 1387
+    TraitPoints: 5
   - Level: 105
     Points: 1410
+    TraitPoints: 6
   - Level: 106
     Points: 1433
+    TraitPoints: 7
   - Level: 107
     Points: 1456
+    TraitPoints: 8
   - Level: 108
     Points: 1479
+    TraitPoints: 9
   - Level: 109
     Points: 1502
+    TraitPoints: 10
   - Level: 110
     Points: 1525
+    TraitPoints: 12
   - Level: 111
     Points: 1549
   - Level: 112
