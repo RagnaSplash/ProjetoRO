@@ -1251,11 +1251,14 @@ ACMD_FUNC(alive)
  *------------------------------------------*/
 ACMD_FUNC(kami)
 {
+	map_session_data* pl_sd;
+	struct s_mapiterator* iter;
 	unsigned long color=0;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
 
+	iter = mapit_getallusers();
 	if(*(command + 5) != 'c' && *(command + 5) != 'C') {
 		if (!message || !*message) {
 			clif_displaymessage(fd, msg_txt(sd,980)); // Please enter a message (usage: @kami <message>).
@@ -1263,10 +1266,16 @@ ACMD_FUNC(kami)
 		}
 
 		sscanf(message, "%255[^\n]", atcmd_output);
-		if (strstr(command, "l") != NULL)
+		if (strstr(command, "l") != NULL){
+			for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) )
+				if (pl_sd->bl.m == sd->bl.m)
+					clif_soundeffect( pl_sd->bl, "anuncio.wav", 0, SELF );
 			clif_broadcast(&sd->bl, atcmd_output, strlen(atcmd_output) + 1, BC_DEFAULT, ALL_SAMEMAP);
-		else
+		}else{
+			for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) )
+				clif_soundeffect( pl_sd->bl, "anuncio.wav", 0, SELF );
 			intif_broadcast(atcmd_output, strlen(atcmd_output) + 1, (*(command + 5) == 'b' || *(command + 5) == 'B') ? BC_BLUE : BC_DEFAULT);
+		}
 	} else {
 		if(!message || !*message || (sscanf(message, "%20lx %199[^\n]", &color, atcmd_output) < 2)) {
 			clif_displaymessage(fd, msg_txt(sd,981)); // Please enter color and message (usage: @kamic <color> <message>).
@@ -1277,8 +1286,11 @@ ACMD_FUNC(kami)
 			clif_displaymessage(fd, msg_txt(sd,982)); // Invalid color.
 			return -1;
 		}
+		for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) )
+			clif_soundeffect( pl_sd->bl, "anuncio.wav", 0, SELF );
 		intif_broadcast2(atcmd_output, strlen(atcmd_output) + 1, color, 0x190, 12, 0, 0);
 	}
+	mapit_free(iter);
 	return 0;
 }
 
@@ -1990,6 +2002,172 @@ ACMD_FUNC(hair_color)
 	}
 
 	return 0;
+}
+
+ACMD_FUNC(whosell){
+	char item_name[100];
+	int item_id = 0, j, count = 0, sat_num = 0;
+	int s_type = 1; // search bitmask: 0-name,1-id, 2-card, 4-refine
+	int refine = 0,card_id = 0;
+	bool flag = 1; // place dot on the minimap?
+	map_session_data* pl_sd;
+	struct s_mapiterator* iter;
+	unsigned int MinPrice = battle_config.vending_max_value, MaxPrice = 0;
+	static char atcmd_output[CHAT_SIZE_MAX];
+	struct item item_tmp = {};
+	
+	std::shared_ptr<item_data> item_data = item_db.searchname( item_name );
+
+	if (!*message) {
+		clif_displaymessage(fd, "Use: @whosell <+refino> <nome ou id>[id da carta]");
+		return -1;
+	}
+	if (sscanf(message, "+%d %d[%d]", &refine, &item_id, &card_id) == 3){
+		s_type = 1+2+4;
+	}
+	else if (sscanf(message, "+%d %d", &refine, &item_id) == 2){
+		s_type = 1+4;
+	}
+	else if (sscanf(message, "+%d [%d]", &refine, &card_id) == 2){
+		s_type = 2+4;
+	}
+	else if (sscanf(message, "%d[%d]", &item_id, &card_id) == 2){
+		s_type = 1+2;
+	}
+	else if (sscanf(message, "[%d]", &card_id) == 1){
+		s_type = 2;
+	}
+	else if (sscanf(message, "+%d", &refine) == 1){
+		s_type = 4;
+	}
+	else if (sscanf(message, "%d", &item_id) == 1 && item_id == atoi(message)){
+		s_type = 1;
+	}
+	else if (sscanf(message, "%99[^\n]", item_name) == 1){
+		s_type = 1;
+	if ((item_data = item_db.searchname(item_name)) == NULL){
+		clif_displaymessage(fd, "Item não encontrado com este nome");
+		return -1;
+	}
+		item_id = item_data->nameid;
+	} else {
+		clif_displaymessage(fd, "Use: @whosell <item_id> ou @whosell <nome_do_item>");
+		return -1;
+	}
+
+	//check card
+	if(s_type & 2 && ((item_data = item_db.find(card_id)) == NULL || item_data->type != IT_CARD)){
+		clif_displaymessage(fd, "Not found a card with than ID");
+		return -1;
+	}
+	//check item
+	if(s_type & 1 && (item_data = item_db.find(item_id)) == NULL){
+		clif_displaymessage(fd, "Não foi encontrado um item com esse ID");
+		return -1;
+	}
+	//check refine
+	if(s_type & 4){
+		if (refine<0 || refine>10){
+			clif_displaymessage(fd, "Refino: 0 - 10");
+			return -1;
+		}
+		/*if(item_data->type != IT_WEAPON && item_data->type != IT_ARMOR){
+			clif_displaymessage(fd, "Use refine only with weapon or armor");
+			return -1;
+		}*/
+	}
+	
+	iter = mapit_getallusers();
+	for (pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter)) {
+		if (pl_sd->vender_id ) {	 // check if player is vending
+			for (j = 0; j < pl_sd->vend_num; j++) {
+				if ((item_data = item_db.find(pl_sd->cart.u.items_cart[pl_sd->vending[j].index].nameid)) == NULL)
+					continue;
+				if(s_type & 1 && pl_sd->cart.u.items_cart[pl_sd->vending[j].index].nameid != item_id)
+					continue;
+				if(s_type & 2 && ((item_data->type != IT_ARMOR && item_data->type != IT_WEAPON) ||
+						(pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[0] != card_id &&
+						pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[1] != card_id &&
+						pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[2] != card_id &&
+						pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[3] != card_id)))
+					continue;
+				if(s_type & 4 && ((item_data->type != IT_ARMOR && item_data->type != IT_WEAPON) || pl_sd->cart.u.items_cart[pl_sd->vending[j].index].refine != refine))
+					continue;
+				item_tmp.nameid = item_data->nameid;
+				if(item_data->type == IT_ARMOR) {
+					item_tmp.refine = pl_sd->cart.u.items_cart[pl_sd->vending[j].index].refine;
+					item_tmp.card[0] = pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[0];
+				} else if(item_data->type == IT_WEAPON) {
+					item_tmp.refine = pl_sd->cart.u.items_cart[pl_sd->vending[j].index].refine;
+					item_tmp.card[0] = pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[0];
+					item_tmp.card[1] = pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[1];
+					item_tmp.card[2] = pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[2];
+					item_tmp.card[3] = pl_sd->cart.u.items_cart[pl_sd->vending[j].index].card[3];
+				}
+				// Convert the price to a string with decimal places
+                std::string price_str = std::to_string(pl_sd->vending[j].value);
+                size_t len = price_str.length();
+                int num_dots = (len - 1) / 3;
+                int remainder = len % 3;
+                std::string formatted_price = price_str.substr(0, remainder);
+                for (size_t i = remainder; i < len; i += 3) {
+                    if (!formatted_price.empty())
+                        formatted_price += '.';
+                    formatted_price += price_str.substr(i, 3);
+                }
+                // Add suffix based on the number of digits in the price
+                std::string price_suffix;
+                if (len < 4) {
+                    price_suffix = "z";
+                } else if (len >= 4 && len < 7) {
+                    price_suffix = "k";
+				} else if (len >= 7 && len < 10) {
+                    price_suffix = "m";
+                } else {
+                    price_suffix = "b";
+                }
+				snprintf(atcmd_output, CHAT_SIZE_MAX, "%s - Preço: %s%s - Quantidade: %d - %s %d,%d - %s",
+            	item_db.create_item_link(item_tmp).c_str(),
+                formatted_price.c_str(),
+				price_suffix.c_str(),
+                pl_sd->vending[j].amount,
+                mapindex_id2name(pl_sd->mapindex),
+                pl_sd->bl.x, pl_sd->bl.y,
+                pl_sd->message);
+				if(pl_sd->vending[j].value < MinPrice) MinPrice = pl_sd->vending[j].value;
+				if(pl_sd->vending[j].value > MaxPrice) MaxPrice = pl_sd->vending[j].value;
+				clif_displaymessage(fd, atcmd_output);
+				count++;
+				flag = 1;
+			}
+			if (flag && pl_sd->mapindex == sd->mapindex) {
+				clif_viewpoint(sd, 1, 1, pl_sd->bl.x, pl_sd->bl.y, ++sat_num, 0xFFFFFF);
+				flag = 0;
+			}
+		}
+	}
+	mapit_free(iter);
+	if(count > 0) {
+		snprintf(atcmd_output, CHAT_SIZE_MAX, "Encontrado %d registro(s).", count);
+		clif_displaymessage(fd, atcmd_output);
+	} else
+		clif_displaymessage(fd, "Ninguém está vendendo agora.");
+
+	return 0;
+}
+
+/*==========================================
+ * @listenbg Teleporte para a cidade principal
+ *------------------------------------------*/
+ACMD_FUNC(listenbg) {
+    // Check if the player is already listening to BG messages
+    if (sd->bg_listen_enabled) {
+        sd->bg_listen_enabled = false; // Disable BG message listening
+        clif_displaymessage(fd, "You stop listening to Battleground messages.");
+    } else {
+        sd->bg_listen_enabled = true;  // Enable BG message listening
+        clif_displaymessage(fd, "You start listening to Battleground messages.");
+    }
 }
 
 /*==========================================
@@ -5667,6 +5845,8 @@ ACMD_FUNC(exp)
  *------------------------------------------*/
 ACMD_FUNC(broadcast)
 {
+	map_session_data* pl_sd;
+	struct s_mapiterator* iter;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
@@ -5676,9 +5856,16 @@ ACMD_FUNC(broadcast)
 		return -1;
 	}
 
+	iter = mapit_getallusers();
+	for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) )
+	{
+		clif_soundeffect( pl_sd->bl, "anuncio.wav", 0, SELF );
+	}
+
 	sprintf(atcmd_output, "%s: %s", sd->status.name, message);
 	intif_broadcast(atcmd_output, strlen(atcmd_output) + 1, BC_DEFAULT);
-
+	
+	mapit_free(iter);
 	return 0;
 }
 
@@ -5687,6 +5874,8 @@ ACMD_FUNC(broadcast)
  *------------------------------------------*/
 ACMD_FUNC(localbroadcast)
 {
+	map_session_data* pl_sd;
+	struct s_mapiterator* iter;
 	nullpo_retr(-1, sd);
 
 	memset(atcmd_output, '\0', sizeof(atcmd_output));
@@ -5696,10 +5885,18 @@ ACMD_FUNC(localbroadcast)
 		return -1;
 	}
 
+	iter = mapit_getallusers();
+	for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) )
+	{
+		if (pl_sd->bl.m == sd->bl.m)
+			clif_soundeffect( pl_sd->bl, "anuncio.wav", 0, SELF );
+	}
+
 	sprintf(atcmd_output, "%s: %s", sd->status.name, message);
 
 	clif_broadcast(&sd->bl, atcmd_output, strlen(atcmd_output) + 1, BC_DEFAULT, ALL_SAMEMAP);
 
+	mapit_free(iter);
 	return 0;
 }
 
@@ -11229,7 +11426,6 @@ void atcommand_basecommands(void) {
 		ACMD_DEFR(channel,ATCMD_NOSCRIPT),
 		ACMD_DEF(fontcolor),
 		ACMD_DEF(langtype),
-		ACMD_DEF(trinity),
 #ifdef VIP_ENABLE
 		ACMD_DEF(vip),
 		ACMD_DEF(showrate),
@@ -11256,6 +11452,9 @@ void atcommand_basecommands(void) {
 		ACMD_DEFR(enchantgradeui, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEFR(roulette, ATCMD_NOCONSOLE|ATCMD_NOAUTOTRADE),
 		ACMD_DEF(setcard),
+		ACMD_DEF(trinity),
+		ACMD_DEF(whosell),
+		ACMD_DEF(listenbg),
 	};
 	AtCommandInfo* atcommand;
 	int i;
