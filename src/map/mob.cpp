@@ -189,6 +189,7 @@ TIMER_FUNC(mvptomb_delayspawn){
 void mvptomb_create(struct mob_data *md, char *killer, time_t time)
 {
 	struct npc_data *nd;
+	int cont = 0;
 
 	if ( md->tomb_nid )
 		mvptomb_destroy(md);
@@ -212,6 +213,30 @@ void mvptomb_create(struct mob_data *md, char *killer, time_t time)
 	nd->u.tomb.md = md;
 	nd->u.tomb.kill_time = time;
 	nd->u.tomb.spawn_timer = INVALID_TIMER;
+
+	// Tomb Damage
+	nd->u.tomb.damage1 = 0;
+	nd->u.tomb.damage2 = 0;
+	nd->u.tomb.damage3 = 0;
+
+	for (int i = 0; i < TOMB_DAMAGE_SIZE; i++)
+	{
+		if (md->tomb_dmg[i].damage > nd->u.tomb.damage1) {
+			nd->u.tomb.damage2 = nd->u.tomb.damage1;
+			nd->u.tomb.damage1 = md->tomb_dmg[i].damage;
+		}
+		else if (md->tomb_dmg[i].damage > nd->u.tomb.damage2) {
+			nd->u.tomb.damage3 = nd->u.tomb.damage2;
+			nd->u.tomb.damage2 = md->tomb_dmg[i].damage;
+		}
+		else if (md->tomb_dmg[i].damage > nd->u.tomb.damage3)
+			nd->u.tomb.damage3 = md->tomb_dmg[i].damage;
+	}
+
+	ARR_FIND(0, TOMB_DAMAGE_SIZE, cont, md->tomb_dmg[cont].damage == nd->u.tomb.damage2);
+	nd->u.tomb.p2 = md->tomb_dmg[cont].char_name;
+	ARR_FIND(0, TOMB_DAMAGE_SIZE, cont, md->tomb_dmg[cont].damage == nd->u.tomb.damage3);
+	nd->u.tomb.p3 = md->tomb_dmg[cont].char_name;
 
 	if (killer)
 		safestrncpy(nd->u.tomb.killer_name, killer, NAME_LENGTH);
@@ -2416,9 +2441,26 @@ void mob_log_damage(struct mob_data *md, struct block_list *src, int damage)
 //Call when a mob has received damage.
 void mob_damage(struct mob_data *md, struct block_list *src, int damage)
 {
+	map_session_data* sd = BL_CAST(BL_PC, src);
+
 	if( src != nullptr && md->special_state.ai == AI_SPHERE && !md->dmglog[0].id ) {//LOne WOlf explained that ANYONE can trigger the marine countdown skill. [Skotlex]
 		md->state.alchemist = 1;
 		mobskill_use(md, gettick(), MSC_ALCHEMIST);
+	}
+
+	for (int i = 0; i < TOMB_DAMAGE_SIZE; i++)
+	{
+		if (!md->tomb_dmg[i].char_name && !md->tomb_dmg[i].damage)
+		{
+			md->tomb_dmg[i].char_name = sd->status.name;
+			md->tomb_dmg[i].damage = damage;
+			break;
+		}
+		else if (md->tomb_dmg[i].char_name == sd->status.name)
+		{
+			md->tomb_dmg[i].damage += damage;
+			break;
+		}
 	}
 
 	if (src && damage > 0) { //Store total damage...
@@ -3175,6 +3217,12 @@ int mob_dead(struct mob_data *md, struct block_list *src, int type)
 	// MvP tomb [GreenBox]
 	if (battle_config.mvp_tomb_enabled && md->spawn->state.boss && map_getmapflag(md->bl.m, MF_NOTOMB) != 1)
 		mvptomb_create(md, mvp_sd ? mvp_sd->status.name : NULL, time(NULL));
+
+	for (int i = 0; i < TOMB_DAMAGE_SIZE; i++)
+	{
+		md->tomb_dmg[i].char_name = 0;
+		md->tomb_dmg[i].damage = 0;
+	}
 
 	if( !rebirth )
 		mob_setdelayspawn(md); //Set respawning.

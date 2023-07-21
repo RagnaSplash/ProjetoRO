@@ -382,6 +382,11 @@ struct mob_data {
 	int tomb_nid;
 	uint16 damagetaken;
 
+	struct s_tomb_dmg {
+		int damage;
+		const char* char_name;
+	} tomb_dmg[TOMB_DAMAGE_SIZE];
+
 	e_mob_bosstype get_bosstype();
 };
 

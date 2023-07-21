@@ -2157,20 +2157,6 @@ ACMD_FUNC(whosell){
 }
 
 /*==========================================
- * @listenbg Teleporte para a cidade principal
- *------------------------------------------*/
-ACMD_FUNC(listenbg) {
-    // Check if the player is already listening to BG messages
-    if (sd->bg_listen_enabled) {
-        sd->bg_listen_enabled = false; // Disable BG message listening
-        clif_displaymessage(fd, "You stop listening to Battleground messages.");
-    } else {
-        sd->bg_listen_enabled = true;  // Enable BG message listening
-        clif_displaymessage(fd, "You start listening to Battleground messages.");
-    }
-}
-
-/*==========================================
  * @trinity Teleporte para a cidade principal
  *------------------------------------------*/
 ACMD_FUNC(trinity) // Override the default @go command
@@ -11454,7 +11440,6 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(setcard),
 		ACMD_DEF(trinity),
 		ACMD_DEF(whosell),
-		ACMD_DEF(listenbg),
 	};
 	AtCommandInfo* atcommand;
 	int i;

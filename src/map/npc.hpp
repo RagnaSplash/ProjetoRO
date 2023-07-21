@@ -209,7 +209,8 @@ struct npc_data {
 			struct mob_data *md;
 			time_t kill_time;
 			char killer_name[NAME_LENGTH];
-			int spawn_timer;
+			const char *p2, *p3;
+			int spawn_timer, damage1, damage2, damage3;
 		} tomb;
 		struct {
 			bool extended;

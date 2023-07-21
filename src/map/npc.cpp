@@ -2149,8 +2149,23 @@ int npc_globalmessage(const char* name, const char* mes)
 // MvP tomb [GreenBox]
 void run_tomb(map_session_data* sd, struct npc_data* nd)
 {
-	char buffer[200];
+	char buffer[300];
 	char time[10];
+
+	// Convert the price to a string with decimal places
+    auto formatNumberWithCommas = [](int number) {
+        std::string num_str = std::to_string(number);
+        size_t len = num_str.length();
+        int num_commas = (len - 1) / 3;
+        int remainder = len % 3;
+        std::string formatted_number = num_str.substr(0, remainder);
+        for (size_t i = remainder; i < len; i += 3) {
+            if (!formatted_number.empty())
+                formatted_number += ',';
+            formatted_number += num_str.substr(i, 3);
+        }
+        return formatted_number;
+    };
 
 	strftime(time, sizeof(time), "%H:%M", localtime(&nd->u.tomb.kill_time));
 
@@ -2163,10 +2178,25 @@ void run_tomb(map_session_data* sd, struct npc_data* nd)
 	snprintf( buffer, sizeof( buffer ), msg_txt( sd, 659 ), time ); // Time of death : ^EE0000%s^000000
 	clif_scriptmes( *sd, nd->bl.id, buffer );
 
-	clif_scriptmes( *sd, nd->bl.id, msg_txt( sd, 660 ) ); // Defeated by
+	snprintf(buffer, sizeof(buffer), msg_txt(sd, 660), nd->u.tomb.killer_name[0] ? nd->u.tomb.killer_name : "Unknown");
+	clif_scriptmes(*sd, nd->bl.id, buffer);
 
-	snprintf( buffer, sizeof( buffer ), msg_txt( sd, 661 ), nd->u.tomb.killer_name[0] ? nd->u.tomb.killer_name : "Unknown" ); // [^EE0000%s^000000]
+	clif_scriptmes(*sd, nd->bl.id, msg_txt(sd, 1533));
+
+	snprintf(buffer, sizeof(buffer), msg_txt(sd, 1534), nd->u.tomb.killer_name[0] ? nd->u.tomb.killer_name : "[Server]", formatNumberWithCommas(nd->u.tomb.damage1).c_str());
 	clif_scriptmes( *sd, nd->bl.id, buffer );
+
+	if (nd->u.tomb.damage2 != NULL)
+	{
+		snprintf(buffer, sizeof(buffer), msg_txt(sd, 1535), nd->u.tomb.p2, formatNumberWithCommas(nd->u.tomb.damage2).c_str());
+		clif_scriptmes(*sd, nd->bl.id, buffer);
+	}
+
+	if (nd->u.tomb.damage3 != NULL)
+	{
+		snprintf(buffer, sizeof(buffer), msg_txt(sd, 1536), nd->u.tomb.p3, formatNumberWithCommas(nd->u.tomb.damage3).c_str());
+		clif_scriptmes(*sd, nd->bl.id, buffer);
+	}
 
 	clif_scriptclose(sd, nd->bl.id);
 }
