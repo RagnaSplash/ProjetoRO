@@ -16,7 +16,7 @@
 //= 2.0 Added 4th class [Lemongrass]
 //============================================================
 
-prontera,153,193,6	script	Job Master	123,{
+trinity,101,79,6	script	Job Master	624,{
 function Get_Job_Equip;
 // Checks if the Player has the required level.
 // closes if not, returns if yes
@@ -144,8 +144,8 @@ function	Job_Options	{
 
 	// initialisation
 	.@eac = eaclass();
-	.@fourth_possible = Can_Change_Fourth();
-	.@third_possible = Can_Change_Third();
+	//.@fourth_possible = Can_Change_Fourth();
+	//.@third_possible = Can_Change_Third();
 	.@rebirth_possible = Can_Rebirth();
 	.@first_eac = .@eac&EAJ_BASEMASK;
 	.@second_eac = .@eac&EAJ_UPPERMASK;

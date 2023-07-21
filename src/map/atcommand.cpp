@@ -1993,6 +1993,31 @@ ACMD_FUNC(hair_color)
 }
 
 /*==========================================
+ * @trinity Teleporte para a cidade principal
+ *------------------------------------------*/
+ACMD_FUNC(trinity) // Override the default @go command
+{
+	int x = 110; // Target coordinates for Trinity
+	int y = 90;
+	char map_name[MAP_NAME_LENGTH];
+	safestrncpy(map_name, "trinity", MAP_NAME_LENGTH); // Target map name (Trinity)
+
+	nullpo_retr(-1, sd);
+
+	// Get the map index from the map name
+	int map_index = mapindex_name2id(map_name);
+	if (map_index < 0) {
+		clif_displaymessage(sd->fd, "Invalid map name. Please contact the server administrator."); // Invalid map name.
+		return 0;
+	}
+
+	// Warp the player to the specified map and coordinates
+	pc_setpos(sd, map_index, x, y, CLR_TELEPORT);
+
+	return 0;
+}
+
+/*==========================================
  * @go [city_number or city_name] - Updated by Harbin
  *------------------------------------------*/
 ACMD_FUNC(go)
@@ -11204,6 +11229,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEFR(channel,ATCMD_NOSCRIPT),
 		ACMD_DEF(fontcolor),
 		ACMD_DEF(langtype),
+		ACMD_DEF(trinity),
 #ifdef VIP_ENABLE
 		ACMD_DEF(vip),
 		ACMD_DEF(showrate),

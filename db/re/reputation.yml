@@ -55,10 +55,10 @@ Body:
     Minimum: -3000
     Maximum: 3000
   - Id: 5
-    Name: Nivel Max
+    Name: Mastery Level
     Variable: RepLvlMax
-    Minimum: -10
-    Maximum: 10
+    Minimum: -10000
+    Maximum: 10000
 
 Footer:
   Imports:

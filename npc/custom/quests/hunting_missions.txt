@@ -23,7 +23,7 @@
 //=     Syntax updates and style cleaning.
 //============================================================
 
-prontera,152,187,6	script	Hunting Missions	4_F_EDEN_MASTER,{
+trinity,128,122,1	script	Hunting Missions	631,{
 function Chk;
 	mes "[Hunting Missions]";
 	mes "Hello, " + strcharinfo(0) + "!";
@@ -316,7 +316,7 @@ OnInit:
 	setarray .Count[0],     // Min and max monsters per subquest (increases rewards).
 		40,70;
 	setarray .Modifier[0],  // Multipliers for Base Exp, Job Exp, and Zeny rewards.
-		getbattleflag("base_exp_rate")/100,getbattleflag("job_exp_rate")/100,60;
+		getbattleflag("base_exp_rate")/100,getbattleflag("job_exp_rate")/100,10;
 	.mob_db$ =              // Table name of SQL mob database
 		(checkre(0))?"mob_db_re":"mob_db";
 	setarray .Shop[0],      // Reward items: <ID>,<point cost> (about 10~20 points per hunt).

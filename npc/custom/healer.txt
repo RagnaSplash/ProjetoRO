@@ -15,31 +15,24 @@
 
 -	script	Healer	-1,{
 
-	.@Price = 0;	// Zeny required for heal
-	.@Buffs = 0;	// Also buff players? (1: yes / 0: no)
-	.@Delay = 0;	// Heal delay, in seconds
-
-	if (@HD > gettimetick(2))
-		end;
-	if (.@Price) {
-		message strcharinfo(0), "Healing costs " + callfunc("F_InsertComma",.@Price) + " Zeny.";
-		if (Zeny < .@Price)
-			end;
-		if (select("^0055FFHeal^000000:^777777Cancel^000000") == 2)
-			end;
-		Zeny -= .@Price;
-	}
-	specialeffect2 EF_HEAL2;
-	percentheal 100,100;
-	if (.@Buffs) {
-		specialeffect2 EF_INCAGILITY;
-		sc_start SC_INCREASEAGI,240000,10;
+    // Check if the player is a VIP
+    if (vip_status(VIP_STATUS_ACTIVE)) {
+ 		specialeffect2 EF_INCAGILITY;
+		sc_start SC_INCREASEAGI,300000,8;
 		specialeffect2 EF_BLESSING;
-		sc_start SC_BLESSING,240000,10;
-	}
-	if (.@Delay)
-		@HD = gettimetick(2) + .@Delay;
-	end;
+		sc_start SC_BLESSING,300000,8;
+		specialeffect2 EF_IMPOSITIO;
+		sc_start SC_IMPOSITIO,60000,3;
+		specialeffect2 EF_MAGNIFICAT;
+		sc_start SC_MAGNIFICAT,60000,5;
+		percentheal 100,100;
+    } else {
+ 		specialeffect2 EF_INCAGILITY;
+		sc_start SC_INCREASEAGI,300000,5;
+		specialeffect2 EF_BLESSING;
+		sc_start SC_BLESSING,300000,5;
+		percentheal 100,100;
+    }
 }
 
 
@@ -84,3 +77,7 @@ ecl_in01,45,60,4	duplicate(Healer)	Healer#ecl	909
 malangdo,132,114,6	duplicate(Healer)	Healer#mal	909
 malaya,227,204,6	duplicate(Healer)	Healer#ma	909
 mora,55,152,4	duplicate(Healer)	Healer#mora	909
+
+// Duplicates (Custom)
+//============================================================
+trinity,106,97,3	duplicate(Healer)	Healer#trinity	612
