@@ -1,0 +1,18 @@
+trinity,100,104,5	script	Freebies	612,{
+if(!#onetimefreebies) {
+    set #onetimefreebies,1;
+    mes "Olá!!";
+    mes "Provavelmente você está aqui para pegar seus ^00FF00'Freebies'^000000.";
+    next;
+    mes "Aqui está! Aproveite!";
+    getitem 909,5 ;
+    //getitembound << use this to give bounded items
+}else{
+    mes "You already claimed your item.";
+}
+close;
+
+OnInit:
+	waitingroom "Freebies",0;
+	end;
+}

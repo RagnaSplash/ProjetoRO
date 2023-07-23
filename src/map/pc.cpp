@@ -9174,7 +9174,7 @@ int pc_resetstate(map_session_data* sd)
 		sd->status.status_point += battle_config.transcendent_status_points;
 	}
 
-	if ((sd->class_&JOBL_FOURTH) != 0) {
+	if ((sd->class_&JOBL_UPPER) != 0) {
 		sd->status.trait_point += battle_config.trait_points_job_change;
 	}
 

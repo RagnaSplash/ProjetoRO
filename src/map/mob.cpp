@@ -1,6 +1,10 @@
 // Copyright (c) rAthena Dev Teams - Licensed under GNU GPL
 // For more information, see LICENCE in the main folder
 
+#include "status.hpp"      // For struct status_data and status_get_lv
+#include "chat.hpp"        // For struct chat_data and chat_createchat
+#include "unit.hpp"        // For unit_setdir and unit_getdir
+
 #include "mob.hpp"
 
 #include <algorithm>
@@ -4277,6 +4281,51 @@ int mob_clone_spawn(map_session_data *sd, int16 m, int16 x, int16 y, const char 
 	}
 
 	mob_spawn(md);
+
+	return md->bl.id;
+}
+
+// Market Clone [AnnieRuru/Dastgir]
+int mob_clone_spawn_market( map_session_data *sd, int16 m, int16 x, int16 y, char market_title[], char market_msg[] ) { //Copy of mob_clone_spawn with some modification.
+	int mob_id;
+	struct mob_data *md;
+	struct status_data *mstatus;
+	struct chat_data* cd;
+
+	ARR_FIND( MOB_CLONE_START, MOB_CLONE_END, mob_id, !mob_db.exists(mob_id) );
+	if (mob_id >= MOB_CLONE_END)
+		return 0;
+
+	std::shared_ptr<s_mob_db> db = std::make_shared<s_mob_db>();
+
+	mob_db.put( mob_id, db );
+
+	mstatus = &db->status;
+	db->sprite = sd->status.name;
+	db->name = sd->status.name;
+	db->jname = sd->status.name;
+	db->lv = status_get_lv(&sd->bl);
+	memcpy( mstatus, &sd->base_status, sizeof( struct status_data ));
+	mstatus->rhw.atk = mstatus->rhw.atk2 = mstatus->lhw.atk = mstatus->lhw.atk2 = mstatus->hp = mstatus->max_hp = mstatus->sp = mstatus->max_sp =  1;
+	mstatus->mode = MD_NONE;
+	memcpy( &db->vd, &sd->vd, sizeof( struct view_data ) );
+	db->base_exp = db->job_exp = db->range2 = db->range3 = 1;
+	db->option = 0;
+
+	md = mob_once_spawn_sub( &sd->bl, m, x, y, sd->status.name, mob_id, "", SZ_SMALL, AI_NONE );
+	if ( !md )
+		return 0;
+	md->special_state.clone = 1;
+	mob_spawn(md);
+	unit_setdir( &md->bl, unit_getdir(&sd->bl) );
+	cd = chat_createchat( &md->bl, market_title, "", 1, false, 0, "", 0, 1, MAX_LEVEL );
+	if ( !cd )
+		return 0;
+	md->market_chat_id = cd->bl.id;
+	safestrncpy( md->market_message, market_msg, CHAT_SIZE_MAX );
+	clif_dispchat( cd, 0 );
+	if ( sd->vd.dead_sit == 2 )
+		clif_sitting( &md->bl );
 
 	return md->bl.id;
 }

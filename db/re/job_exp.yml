@@ -127,6 +127,12 @@ Body:
       Baby_Dancer: true
       Baby_Crusader2: true
       Baby_Taekwon: true
+      Baby_Ninja: true
+      Baby_Star_Gladiator: true
+      Baby_Soul_Linker: true
+      Baby_Gunslinger: true
+      Baby_Star_Gladiator2: true
+      Super_Baby: true
     MaxBaseLevel: 99
     BaseExp:
       - Level: 1
@@ -353,16 +359,10 @@ Body:
       Super_Novice: true
       Gunslinger: true
       Ninja: true
-      Super_Baby: true
       Taekwon: true
       Star_Gladiator: true
       Star_Gladiator2: true
       Soul_Linker: true
-      Baby_Ninja: true
-      Baby_Star_Gladiator: true
-      Baby_Soul_Linker: true
-      Baby_Gunslinger: true
-      Baby_Star_Gladiator2: true
     MaxBaseLevel: 110
     BaseExp:
       - Level: 1

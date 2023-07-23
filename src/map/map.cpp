@@ -2052,6 +2052,9 @@ void map_deliddb(struct block_list *bl)
  *------------------------------------------*/
 int map_quit(map_session_data *sd) {
 	int i;
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( sd->market_clone_id )
+		status_damage( NULL, map_id2bl( sd->market_clone_id ), 100, 0, 0, 5, 0 );
 
 	if (sd->state.keepshop == false) { // Close vending/buyingstore
 		if (sd->state.vending)

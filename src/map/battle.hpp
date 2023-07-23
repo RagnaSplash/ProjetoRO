@@ -669,6 +669,11 @@ struct Battle_Config
 	int min_shop_sell;
 	int feature_equipswitch;
 	int pet_walk_speed;
+	// Market Clone [AnnieRuru/Dastgir]
+	int market_can_anywhere;
+	int market_clone_delay;
+	int market_clone_zenycost;
+	int market_msg_color;
 	int blacksmith_fame_refine_threshold;
 	int mob_nopc_idleskill_rate;
 	int mob_nopc_move_rate;

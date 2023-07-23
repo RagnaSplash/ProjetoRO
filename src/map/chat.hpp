@@ -5,6 +5,8 @@
 #define CHAT_HPP
 
 #include "map.hpp" // struct block_list, CHATROOM_TITLE_SIZE
+#include "mob.hpp"		// Market Clone [AnnieRuru/Dastgir]
+#include "../common/socket.hpp"
 
 class map_session_data;
 struct chat_data;
@@ -28,6 +30,7 @@ struct chat_data {
 	DBMap* kick_list;				//DBMap of users who were kicked from this chat
 };
 
+struct chat_data* chat_createchat(struct block_list* bl, const char* title, const char* pass, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl);
 int chat_createpcchat(map_session_data* sd, const char* title, const char* pass, int limit, bool pub);
 int chat_joinchat(map_session_data* sd, int chatid, const char* pass);
 int chat_leavechat(map_session_data* sd, bool kicked);

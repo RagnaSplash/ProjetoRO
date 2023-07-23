@@ -5138,6 +5138,9 @@ void clif_getareachar_unit( map_session_data* sd,struct block_list *bl ){
 					if( md->dmglog[i].id == sd->status.char_id )
 						clif_monster_hp_bar(md, sd->fd);
 			}
+			// Market Clone [AnnieRuru/Dastgir]
+			if ( md->market_chat_id )
+				clif_dispchat( (struct chat_data*)map_id2bl( md->market_chat_id ), sd->fd );
 #endif
 		}
 		break;
@@ -10142,7 +10145,7 @@ void clif_name( struct block_list* src, struct block_list *bl, send_target targe
 				safestrncpy( packet.position_name, md->guardian_data->castle->castle_name, NAME_LENGTH );
 
 				clif_send(&packet, sizeof(packet), src, target);
-			}else if( battle_config.show_mob_info ){
+			}else if( battle_config.show_mob_info && !md->market_chat_id ){		// Market Clone [AnnieRuru/Dastgir]
 				PACKET_ZC_ACK_REQNAMEALL packet = { 0 };
 
 				packet.packet_id = HEADER_ZC_ACK_REQNAMEALL;

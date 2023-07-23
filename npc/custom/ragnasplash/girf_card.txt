@@ -1,0 +1,53 @@
+trinity,111,132,3	script	New Player Code	614,{
+    disable_items;
+    mes "[ New Player Code ]";
+    mes " Hahaha... I know you are strong enough.";
+    mes "Which type of gift card do you want to redeem?";
+    next;
+        switch(select((getgroupid() == 99)?"Generate gift cards":"","Redeem gift card")){
+            case 1:
+                    mes "Generate that type of gift card.";
+                    next;
+                    switch(select("Generate gift cards one","Generate gift cards two")){
+                        case 1:
+                            @cardtype = 1;
+                            break;
+                        case 2:
+                            @cardtype = 2;
+                            break;
+                    }
+                    input .@count,0,200;
+                    if(.@count==0)end;
+                    for    (.@i = 0; .@i < .@count; .@i++){
+                        .@card$ = "Splash_"+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))]+$@base62$[rand(getarraysize($@base62$))];
+                        query_sql("SELECT EXISTS(SELECT * FROM newplayercard WHERE `cardid` = '"+.@card$+"');",.@p);
+                        if(.@p==0)query_sql("INSERT INTO newplayercard VALUES ('"+.@card$+"',"+@cardtype+");");
+                    }
+                    end;
+            case 2:
+                if(!#onetimeitem) {
+                    set #onetimeitem,1;
+                    again:
+                    mes "[ New Player Code ]";
+                    mes "Please enter or paste your gift card code ID";
+                    next;
+                    input .@count$,0,200;
+                    query_sql("SELECT EXISTS(SELECT * FROM newplayercard WHERE `cardid` = '"+.@count$+"');",.@p);
+                    if(.@p==1){
+                        query_sql "DELETE FROM `newplayercard` WHERE `cardid` = '"+.@count$+"';";
+                        getitem 909,1;
+                        end;
+                    }
+                    mes "[New Player Code]";
+                    mes "Sorry, your serial number is invalid. Please check the serial number or contact GMQQ494887.";
+                    goto again;
+                    end;
+                }else{
+                    mes "You already claimed your item.";
+                }
+        }
+    end;
+OnInit:
+    setarray $@base62$,"0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z";
+    end;
+}

@@ -900,6 +900,10 @@ public:
 	int respawn_tid;
 	int bank_vault; ///< Bank Vault
 
+	// Market Clone [AnnieRuru/Dastgir]
+	int market_clone_id;
+	int market_clone_delay;
+
 #ifdef PACKET_OBFUSCATION
 	unsigned int cryptKey; ///< Packet obfuscation key to be used for the next received packet
 #endif

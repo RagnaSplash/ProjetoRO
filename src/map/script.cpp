@@ -11304,6 +11304,10 @@ BUILDIN_FUNC(areamonster)
 	char *event=va_arg(ap,char *);
 	int allflag=va_arg(ap,int);
 
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( md->market_chat_id )
+		return 0;
+
 	md->state.npc_killmonster = 1;
 
 	if(!allflag){
@@ -11322,6 +11326,10 @@ static int buildin_killmonster_sub(struct block_list *bl,va_list ap)
 	TBL_MOB* md = (TBL_MOB*)bl;
 	char *event=va_arg(ap,char *);
 	int allflag=va_arg(ap,int);
+
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( md->market_chat_id )
+		return 0;
 
 	if(!allflag){
 		if(strcmp(event,md->npc_event)==0)
@@ -11365,6 +11373,9 @@ static int buildin_killmonsterall_sub_strip(struct block_list *bl,va_list ap)
 	struct mob_data *md;
 
 	md = BL_CAST(BL_MOB, bl);
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( md->market_chat_id )
+		return 0;
 	if (md->npc_event[0])
 		md->npc_event[0] = 0;
 
@@ -11373,6 +11384,9 @@ static int buildin_killmonsterall_sub_strip(struct block_list *bl,va_list ap)
 }
 static int buildin_killmonsterall_sub(struct block_list *bl,va_list ap)
 {
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( ((TBL_MOB*)bl)->market_chat_id )
+		return 0;
 	status_kill(bl);
 	return 0;
 }

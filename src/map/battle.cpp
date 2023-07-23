@@ -9629,6 +9629,11 @@ int battle_check_target( struct block_list *src, struct block_list *target,int f
 	if( (s_bl = battle_get_master(src)) == NULL )
 		s_bl = src;
 
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( target->type == BL_MOB )
+		if ( ((TBL_MOB*)target)->market_chat_id )
+			return -1;
+
 	if ( s_bl->type == BL_PC ) {
 		switch( t_bl->type ) {
 			case BL_MOB: // Source => PC, Target => MOB
@@ -10535,6 +10540,11 @@ static const struct _battle_data {
 	{ "min_shop_sell",                      &battle_config.min_shop_sell,                   0,      0,      INT_MAX,        },
 	{ "feature.equipswitch",                &battle_config.feature_equipswitch,             1,      0,      1,              },
 	{ "pet_walk_speed",                     &battle_config.pet_walk_speed,                  1,      1,      3,              },
+	// Market Clone [AnnieRuru/Dastgir]
+	{ "market_can_anywhere",            	&battle_config.market_can_anywhere,         	0,      0,      1,              },
+	{ "market_clone_delay",           		&battle_config.market_clone_delay,          	0,      0,      INT_MAX,        },
+	{ "market_clone_zenycost",             	&battle_config.market_clone_zenycost,           0,      0,      MAX_ZENY,       },
+	{ "market_msg_color",             		&battle_config.market_msg_color,         0xFFC0CB,      0,      INT_MAX,        },
 	{ "blacksmith_fame_refine_threshold",   &battle_config.blacksmith_fame_refine_threshold,10,     1,      MAX_REFINE,     },
 	{ "mob_nopc_idleskill_rate",            &battle_config.mob_nopc_idleskill_rate,         100,    0,    100,              },
 	{ "mob_nopc_move_rate",                 &battle_config.mob_nopc_move_rate,              100,    0,    100,              },

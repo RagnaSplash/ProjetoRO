@@ -46,8 +46,14 @@ Body:
     Name: Player
     Level: 0
     Commands:
+      commands: true
       changedress: true
       resurrect: true
+      # customs
+      whosell: true
+      trinity: true 
+      chatclone: true
+      chatclonekill: true
     Permissions:
       # without this basic permissions regular players could not trade or party
       can_trade: true
@@ -61,7 +67,6 @@ Body:
     Level: 0
     Commands:
       # Informational commands
-      commands: true
       charcommands: true
       help: true
       rates: true

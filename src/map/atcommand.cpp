@@ -2156,6 +2156,139 @@ ACMD_FUNC(whosell){
 	return 0;
 }
 
+// Market Clone [AnnieRuru/Dastgir]
+ACMD_FUNC(chatclone) 
+{
+	char title[CHAT_SIZE_MAX], msg[CHAT_SIZE_MAX];
+	int clone_delay = battle_config.market_clone_delay; 
+	if ( sd->market_clone_id ) {
+		clif_displaymessage( fd, "Você já tem um clone de chat invocado. Digite '@chatclonekill' para remover esse clone.");
+		return -1;
+	}
+	if ( sd->market_clone_delay + clone_delay > (int)time(NULL) ) {
+		safesnprintf( atcmd_output, CHAT_SIZE_MAX, "Você deve esperar %d segundo(s) antes de usar este comando novamente.", sd->market_clone_delay + clone_delay - (int)time(NULL) );
+		clif_displaymessage( fd, atcmd_output );
+		return -1;
+	}
+	if( !battle_config.market_can_anywhere ) {
+		if ( !map_getmapflag(sd->bl.m, MF_TOWN)) {
+			clif_displaymessage( fd, "Você só pode usar @chatclone em uma cidade.");
+			return -1;
+		}
+	}
+	if ( map_getcell( sd->bl.m, sd->bl.x, sd->bl.y, CELL_CHKNOCHAT ) ) {
+		clif_displaymessage( fd, "Você não pode usar @chatclone nesta área.");
+		return -1;
+	}
+	if ( pc_isdead(sd) ) {
+		clif_displaymessage( fd, "Você não pode criar um clone de chat enquanto estiver morto." );
+		return -1;
+	}
+	if ( npc_isnear( &sd->bl ) ) {
+		clif_displaymessage( fd, "Você não pode criar um clone de chat muito perto de um npc." );
+		return -1;
+	}
+	if ( !message || !*message ) {
+		clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+		return -1;
+	}
+	{
+		int i = 0, j = 0, l = strlen( message ) +1;
+		char *temp = (char*)aMalloc( strlen( message ) +1 );
+		if ( message[0] != '\"' ) {
+			clif_displaymessage( fd, "Lembre-se de que o <Título> deve começar com aspas -> \"");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			return -1;
+		}
+		i = 1;
+		while ( i <= l ) {
+			if ( message[i] == '\"' || message[i] == '\0' )
+				break;
+			else
+				temp[j++] = message[i];
+			i++;
+		}
+		if ( message[i] != '\"' ) {
+			clif_displaymessage( fd, "Lembre-se de que o <Título> deve terminar com aspas -> \"");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			return -1;
+		}
+		temp[j] = '\0';
+		safestrncpy( title, temp, CHAT_SIZE_MAX );		
+		i++;
+		if ( message[i] != ' ' ) {
+			clif_displaymessage( fd, "Lembre-se de ter [Espaço] entre o <Título> e a <Mensagem>.");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			return -1;
+		}
+		i++;
+		if ( message[i] != '\"' ) {
+			clif_displaymessage( fd, "Lembre-se de que a <Mensagem> deve começar com aspas -> \"");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			return -1;
+		}
+		i++;
+		j = 0;
+		while ( i <= l ) {
+			if ( message[i] == '\"' || message[i] == '\0' )
+				break;
+			else
+				temp[j++] = message[i];
+			i++;
+		}
+		if ( message[i] != '\"' ) {
+			clif_displaymessage( fd, "Lembre-se de que a <Mensagem> deve terminar com aspas -> \"");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			return -1;
+		}
+		temp[j] = '\0';
+		safestrncpy( msg, temp, CHAT_SIZE_MAX );
+		aFree( temp );
+	}
+	if ( strlen( title ) < 4 ) {
+		clif_displaymessage( fd, "O Título deve ter mais de 4 caracteres." );
+		return -1;
+	}
+	if ( strlen( title ) >= CHATROOM_TITLE_SIZE ) {
+		safesnprintf( atcmd_output, CHAT_SIZE_MAX, "O título não deve exceder %d caracteres.", CHATROOM_TITLE_SIZE );
+		clif_displaymessage( fd, atcmd_output );
+		return -1;
+	}
+	if ( strlen( msg ) < 4 ) {
+		clif_displaymessage( fd, "A Mensagem deve ter mais de 4 caracteres." );
+		return -1;
+	}
+	if(battle_config.market_clone_zenycost) {
+		if(sd->status.zeny < battle_config.market_clone_zenycost) {
+			safesnprintf( atcmd_output, CHAT_SIZE_MAX, "Não é possível usar o clone de chat, não há zeny suficiente, é necessário %d zeny.", battle_config.market_clone_zenycost );
+			clif_displaymessage( fd, atcmd_output );
+			return -1;
+		}
+	}
+	sd->market_clone_id = mob_clone_spawn_market( sd, sd->bl.m, sd->bl.x, sd->bl.y, title, msg );
+	if ( !sd->market_clone_id ) {
+		clif_displaymessage( fd, "Clone de chat não pode ser criado." );
+		return -1;
+	}
+	if(battle_config.market_clone_zenycost)
+		pc_payzeny(sd, battle_config.market_clone_zenycost, LOG_TYPE_COMMAND, NULL);
+
+	clif_displaymessage( fd, "Clone de chat criado." );
+	return 0;
+}
+
+ACMD_FUNC(chatclonekill) {
+	if ( !sd->market_clone_id ) {
+		clif_displaymessage( fd, "Você ainda não tem um clone de chat. Digite '@chat \"<Título>\" \"<Mensagem>\"' para criar um.");
+		return -1;
+	}
+	status_damage( NULL, map_id2bl( sd->market_clone_id ), 100, 0, 0, 5, 0 );
+	clif_displaymessage( fd, "Seu clone de chat foi removido." );
+	sd->market_clone_id = 0;
+	sd->market_clone_delay = (int)time(NULL);
+	return 0;
+}
+
 /*==========================================
  * @trinity Teleporte para a cidade principal
  *------------------------------------------*/
@@ -2503,6 +2636,10 @@ static int atkillmonster_sub(struct block_list *bl, va_list ap)
 
 	if (md->guardian_data)
 		return 0; //Do not touch WoE mobs!
+
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( md->market_chat_id )
+		return 0;
 
 	if (flag)
 		status_zap(bl,md->status.hp, 0);
@@ -4481,6 +4618,12 @@ ACMD_FUNC(reload) {
 		iter = mapit_getallusers();
 		for( pl_sd = (TBL_PC*)mapit_first(iter); mapit_exists(iter); pl_sd = (TBL_PC*)mapit_next(iter) ){
 			pc_close_npc(pl_sd,1);
+			// Market Clone [AnnieRuru/Dastgir]
+			if ( pl_sd->market_clone_id ) {
+				status_damage(NULL, map_id2bl(pl_sd->market_clone_id), 100, 0, 0, 5, 0 );
+				pl_sd->market_clone_id = 0;
+				pl_sd->market_clone_delay = (int)time(NULL);
+			}			
 			clif_cutin(pl_sd, "", 255);
 			pl_sd->state.block_action &= ~(PCBLOCK_ALL ^ PCBLOCK_IMMUNE);
 			bg_queue_leave(pl_sd);
@@ -11440,6 +11583,8 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(setcard),
 		ACMD_DEF(trinity),
 		ACMD_DEF(whosell),
+		ACMD_DEF(chatclone),
+		ACMD_DEF(chatclonekill),
 	};
 	AtCommandInfo* atcommand;
 	int i;

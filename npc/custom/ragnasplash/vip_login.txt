@@ -4,8 +4,9 @@ OnPCLoginEvent:
 	bonus_script_clear EFST_VIPSTATE;
 	if(vip_status(1)) {
 		set .@timer, vip_status(VIP_STATUS_EXPIRE);
+		set .@duration, vip_status(VIP_STATUS_REMAINING);
 		
-		bonus_script "{}", 3000, 0, 0, EFST_VIPSTATE;
+		bonus_script "{}", .@duration, 0, 0, EFST_VIPSTATE;
 
 		dispbottom "--- VIP ----";
 		dispbottom "==========================";

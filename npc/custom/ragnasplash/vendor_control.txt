@@ -1,4 +1,4 @@
-trinity,111,132,4	script	Vending Helper#1	659,{
+trinity,49,133,4	script	Vending Helper#1	659,{
 	for (.@i = 1; .@i <= .count; .@i++) {
 		getmapxy(.@map$, .@x, .@y, BL_NPC, "#vend_slot"+.@i);
 		if (!getareausers(.map$, .@x, .@y, .@x, .@y) && .@x > 1 && .@y > 1) {

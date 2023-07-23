@@ -12,6 +12,7 @@
 
 #include "status.hpp" // struct status data, struct status_change
 #include "unit.hpp" // unit_stop_walking(), unit_stop_attack()
+#include "chat.hpp"	// Market Clone [AnnieRuru/Dastgir]
 
 struct guardian_data;
 
@@ -380,6 +381,11 @@ struct mob_data {
 	 * MvP Tombstone NPC ID
 	 **/
 	int tomb_nid;
+
+	// Market Clone [AnnieRuru/Dastgir]
+	int market_chat_id;
+	char market_message[CHAT_SIZE_MAX];
+
 	uint16 damagetaken;
 
 	struct s_tomb_dmg {
@@ -563,5 +569,8 @@ void mvptomb_destroy(struct mob_data *md);
 void mob_setdropitem_option(struct item *itm, struct s_mob_drop *mobdrop);
 
 #define CHK_MOBSIZE(size) ((size) >= SZ_SMALL && (size) < SZ_MAX) /// Check valid Monster Size
+
+// Market Clone [AnnieRuru/Dastgir]
+int mob_clone_spawn_market( map_session_data *sd, int16 m, int16 x, int16 y, char market_title[], char market_msg[] );
 
 #endif /* MOB_HPP */

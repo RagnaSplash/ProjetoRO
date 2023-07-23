@@ -954,6 +954,11 @@ bool skill_isNotOk(uint16 skill_id, map_session_data *sd)
 				return true;
 			}
 			break;
+			// Market Clone [AnnieRuru/Dastgir]
+			if ( sd->market_clone_id ) {
+				clif_messagecolor(&sd->bl,color_table[COLOR_RED], "Você não pode usar a habilidade de venda enquanto já tiver um clone de chat.", false, SELF);
+				return true;
+			}
 		case MC_IDENTIFY:
 			return false; // always allowed
 		case WZ_ICEWALL:

@@ -1789,7 +1789,11 @@ int status_percent_change(struct block_list *src, struct block_list *target, int
 
 	status = status_get_status_data(target);
 
-
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( target->type == BL_MOB )
+		if ( ((TBL_MOB*)target)->market_chat_id )
+			return 0;
+			
 	// It's safe now [MarkZD]
 	if (hp_rate > 99)
 		hp = status->hp;

@@ -25,7 +25,8 @@ int chat_triggerevent(struct chat_data *cd); // forward declaration
 
 /// Initializes a chatroom object (common functionality for both pc and npc chatrooms).
 /// Returns a chatroom object on success, or NULL on failure.
-static struct chat_data* chat_createchat(struct block_list* bl, const char* title, const char* pass, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl)
+//static struct chat_data* chat_createchat(struct block_list* bl, const char* title, const char* pass, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl)
+struct chat_data* chat_createchat(struct block_list* bl, const char* title, const char* pass, int limit, bool pub, int trigger, const char* ev, int zeny, int minLvl, int maxLvl)
 {
 	struct chat_data* cd;
 	nullpo_retr(NULL, bl);
@@ -136,6 +137,25 @@ int chat_joinchat(map_session_data* sd, int chatid, const char* pass)
 	if( cd == NULL || cd->bl.type != BL_CHAT || cd->bl.m != sd->bl.m || sd->state.vending || sd->state.buyingstore || sd->chatID || ((cd->owner->type == BL_NPC) ? cd->users+1 : cd->users) >= cd->limit ) {
 		clif_joinchatfail(sd,0);
 		return 0;
+	}
+
+	// Market Clone [AnnieRuru/Dastgir]
+	if ( cd->owner->type == BL_MOB ) {
+		struct mob_data *md = (TBL_MOB*)cd->owner;
+		if ( md->market_chat_id ) {
+			unsigned short msg_len = 0;
+			char output[CHAT_SIZE_MAX];
+			safesnprintf( output, CHAT_SIZE_MAX, "%s : %s", md->name, md->market_message );
+			msg_len = (unsigned short)(strlen(output) + 1);
+			WFIFOHEAD( sd->fd, msg_len + 12 );
+			WFIFOW( sd->fd, 0 ) = 0x2C1;
+			WFIFOW( sd->fd, 2 ) = msg_len + 12;
+			WFIFOL( sd->fd, 4 ) = 0;
+			WFIFOL( sd->fd, 8 ) = (battle_config.market_msg_color & 0x0000FF) << 16 | (battle_config.market_msg_color & 0x00FF00) | (battle_config.market_msg_color & 0xFF0000) >> 16;
+			safestrncpy( (char*)WFIFOP( sd->fd,12 ), output, msg_len );
+			WFIFOSET( sd->fd, msg_len + 12 );
+			return 0;
+		}
 	}
 
 	if( !cd->pub && strncmp(pass, cd->pass, sizeof(cd->pass)) != 0 && !pc_has_permission(sd, PC_PERM_JOIN_ALL_CHAT) ) {
