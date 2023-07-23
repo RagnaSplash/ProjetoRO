@@ -1,40 +1,138 @@
 //===== rAthena Script =======================================
-//= Healer
+//= Curandeira
 //===== By: ==================================================
-//= Euphy
+//= Vini
 //===== Current Version: =====================================
-//= 1.1
+//= 1.0
 //===== Compatible With: =====================================
 //= rAthena Project
 //===== Description: =========================================
-//= Basic healer script.
+//= Curandeira para jogador grátis e vip
 //===== Additional Comments: =================================
-//= 1.0 Initial script.
-//= 1.1 Aligned coordinates with @go.
+//= 1.0 Inicio do script.
 //============================================================
 
 -	script	Healer	-1,{
 
-    // Check if the player is a VIP
-    if (vip_status(VIP_STATUS_ACTIVE)) {
- 		specialeffect2 EF_INCAGILITY;
-		sc_start SC_INCREASEAGI,300000,8;
-		specialeffect2 EF_BLESSING;
-		sc_start SC_BLESSING,300000,8;
-		specialeffect2 EF_IMPOSITIO;
-		sc_start SC_IMPOSITIO,60000,3;
-		specialeffect2 EF_MAGNIFICAT;
-		sc_start SC_MAGNIFICAT,60000,5;
-		percentheal 100,100;
-    } else {
- 		specialeffect2 EF_INCAGILITY;
-		sc_start SC_INCREASEAGI,300000,5;
-		specialeffect2 EF_BLESSING;
-		sc_start SC_BLESSING,300000,5;
-		percentheal 100,100;
-    }
-}
+	// Definir os valores de cura para jogador Free e VIP
+	set .@zenyCost, 3000;
 
+	// Obter o nível base do jogador
+	set .@baseLevel, BaseLevel;
+
+	// Verificar se o jogador é VIP
+	if (vip_status(1)) {
+    	// Seção de pagamento para jogadores VIP com nível base acima de 50
+    	if (.@baseLevel >= 50) {
+        	mes "Como jogador VIP, você terá um desconto de ^FF000050%^000000 para os buffs.";
+        	mes "O valor total será de ^00FF00" + (.@zenyCost/2) + "^000000 zeny.";
+        	next;
+        	mes "Deseja usufruir dos meus serviços ?";
+        	if (select("Sim", "Não") == 1) {
+            	if (Zeny < .@zenyCost/2) {
+                	mes "Você não tem zeny suficiente para usar o serviço.";
+                	close;
+            	} else {
+                	set Zeny, Zeny - (.@zenyCost/2);
+                	dispbottom "Você pagou " + (.@zenyCost/2) + " zeny pelo serviço de cura e buff VIP.";
+                	goto checkOkVIP;
+            	}
+        	} else {
+            	close;
+       		}
+    	} else {
+        	// Buffs for VIP players with base level below 50
+        	specialeffect2 EF_INCAGILITY;
+        	sc_start SC_INCREASEAGI, 300000, 8;
+        	specialeffect2 EF_BLESSING;
+        	sc_start SC_BLESSING, 300000, 8;
+        	specialeffect2 EF_IMPOSITIO;
+        	sc_start SC_IMPOSITIO, 60000, 3;
+        	specialeffect2 EF_MAGNIFICAT;
+        	sc_start SC_MAGNIFICAT, 60000, 5;
+        	percentheal 100, 100;
+
+        	// Verifica o cooldown para o buff de EXP (SC_EXPBOOST)
+        	set .@current_time, gettimetick(2);
+        	set .@last_expbuff_time, getd("$vip_expbuff_time");
+        	set .@exp_buff_cooldown, 4 * 60 * 60; // 4 horas em segundos (ajustável)
+
+        	if (.@current_time - .@last_expbuff_time < .@exp_buff_cooldown) {
+            	dispbottom "Você já recebeu o buff de experiência, tente novamente mais tarde.";
+        	} else {
+            	// Atualiza a hora do último bônus de EXP para a hora atual.
+            	setd("$vip_expbuff_time", .@current_time);
+            	// Buff de 5% de experiência de base e job
+            	sc_start SC_EXPBOOST, 1800000, 5;
+            	dispbottom "Você recebeu o buff de experiência VIP!";
+        	}
+        	end;
+   		}
+	} else {
+    	// Jogadores Free
+    	if (.@baseLevel >= 50) {
+			// Seção de pagamento para jogadores free com nível base acima de 50
+			if (Zeny < .@zenyCost) {
+    			mes "Você não tem zeny suficiente para usar o serviço.";
+    			close;
+			} else {
+    			mes "A partir do nível 50 de base eu estarei cobrando ^00FF00" + .@zenyCost + "^000000 zeny pelo serviço de cura e buff.";
+    			next;
+    			mes "Você deseja usufruir dos meus serviços ?";
+    			if (select("Sim", "Não") == 1) {
+        			set Zeny, Zeny - .@zenyCost;
+        			dispbottom "Você pagou " + .@zenyCost + " zeny pelo serviço de cura e buff.";
+        			goto checkOkFree;
+    			}
+			}
+    	} else {
+			specialeffect2 EF_INCAGILITY;
+			sc_start SC_INCREASEAGI, 300000, 5;
+			specialeffect2 EF_BLESSING;
+			sc_start SC_BLESSING, 300000, 5;
+			percentheal 100, 100;
+			end;
+		}
+	}
+	close;
+
+	checkOkFree:
+	// Buffs para jogadores grátis
+	specialeffect2 EF_INCAGILITY;
+	sc_start SC_INCREASEAGI, 300000, 5; // Agilidade nível 5 por 5 minutos
+	specialeffect2 EF_BLESSING;
+	sc_start SC_BLESSING, 300000, 5; // Benção nível 5 por 5 minutos
+	percentheal 100, 100; // Cura HP e SP totalmente
+	end;
+
+	checkOkVIP:
+	// Buffs para jogadores VIP
+	specialeffect2 EF_INCAGILITY;
+	sc_start SC_INCREASEAGI, 300000, 8; // Agilidade nível 8 por 5 minutos
+	specialeffect2 EF_BLESSING;
+	sc_start SC_BLESSING, 300000, 8; // Benção nível 8 por 5 minutos
+	specialeffect2 EF_IMPOSITIO;
+	sc_start SC_IMPOSITIO, 60000, 3; // Impositio Manus nível 3 por 1 minuto
+	specialeffect2 EF_MAGNIFICAT;
+	sc_start SC_MAGNIFICAT, 60000, 5; // Magnificat nível 5 por 1 minuto
+	percentheal 100, 100; // Cura HP e SP totalmente
+
+	// Verifica o cooldown para o buff de EXP (SC_EXPBOOST)
+	set .@current_time, gettimetick(2);
+	set .@last_expbuff_time, getd("$vip_expbuff_time");
+	set .@exp_buff_cooldown, 4 * 60 * 60; // 4 horas em segundos (ajustável)
+
+	if (.@current_time - .@last_expbuff_time < .@exp_buff_cooldown) {
+		dispbottom "Você já recebeu o buff de experiência, tente novamente mais tarde.";
+	} else {
+    	// Atualiza a hora do último bônus de EXP para a hora atual.
+    	setd("$vip_expbuff_time", .@current_time);
+    	// Buff de 5% de experiência de base e job
+    	sc_start SC_EXPBOOST, 1800000, 5;
+    	dispbottom "Você recebeu o buff de experiência VIP!";
+	}
+	end;
+}
 
 // Duplicates
 //============================================================
