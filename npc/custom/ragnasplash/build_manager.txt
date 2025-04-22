@@ -18,23 +18,50 @@ switch( select( ( .BMMode & 1 )?"^FF0000Save & Switch Builds^000000":"",
 		for( set .@i,1; .@i <= .MaxSlots; set .@i,.@i + 1 )
 			set .@Menu$,.@Menu$ + (( getd( "Slot_"+.@i+"$" ) == "" )?"^FF0000Empty Slot^000000":getd( "Slot_"+.@i+"$" ) )+":";
 		set .@Slot,select( .@Menu$ );
-		do{
-			next;
-			mes "Build : ^FF0000"+(( getd( "Slot_"+.@Slot+"$" ) == "" )?"Slot "+.@Slot:getd( "Slot_"+.@Slot+"$" ) )+"^000000";
-			mes "STR - ^0000FF"+getd( "STR_"+.@Slot )+"^000000      INT - ^0000FF"+getd( "INT_"+.@Slot )+"^000000";
-			mes "AGI - ^0000FF"+getd( "AGI_"+.@Slot )+"^000000      DEX - ^0000FF"+getd( "DEX_"+.@Slot )+"^000000";
-			mes "VIT - ^0000FF"+getd( "VIT_"+.@Slot )+"^000000      LUK - ^0000FF"+getd( "LUK_"+.@Slot )+"^000000";
-            mes "POW - ^0000FF"+getd( "POW_"+.@Slot )+"^000000      STA - ^0000FF"+getd( "STA_"+.@Slot )+"^000000";
-            mes "WIS - ^0000FF"+getd( "WIS_"+.@Slot )+"^000000      SPL - ^0000FF"+getd( "SPL_"+.@Slot )+"^000000";
-           	mes "CON - ^0000FF"+getd( "CON_"+.@Slot )+"^000000      CRT - ^0000FF"+getd( "CRT_"+.@Slot )+"^000000"; 
+	do {
+		next;
+	
+		if (getd("Slot_"+.@Slot+"$") == "") {
+			mes "Build : ^FF0000Slot "+.@Slot+" (unsaved)^000000";
+			mes "Showing current stats/traits before saving:";
+			mes "STR - ^0000FF"+readparam(bStr)+"^000000      INT - ^0000FF"+readparam(bInt)+"^000000";
+			mes "AGI - ^0000FF"+readparam(bAgi)+"^000000      DEX - ^0000FF"+readparam(bDex)+"^000000";
+			mes "VIT - ^0000FF"+readparam(bVit)+"^000000      LUK - ^0000FF"+readparam(bLuk)+"^000000";
+			// Se a build ainda não foi salva, mostra os traits atuais do personagem
+			if (getd("POW_"+.@Slot) == 0 && getd("STA_"+.@Slot) == 0) {
+				mes "POW - ^0000FF"+readparam(bPOW)+"^000000      STA - ^0000FF"+readparam(bSTA)+"^000000";
+				mes "WIS - ^0000FF"+readparam(bWIS)+"^000000      SPL - ^0000FF"+readparam(bSPL)+"^000000";
+				mes "CON - ^0000FF"+readparam(bCON)+"^000000      CRT - ^0000FF"+readparam(bCRT)+"^000000";
+			} else {
+			// Caso já tenha uma build salva, mostra os traits salvos
+				mes "POW - ^0000FF"+getd("POW_"+.@Slot)+"^000000      STA - ^0000FF"+getd("STA_"+.@Slot)+"^000000";
+				mes "WIS - ^0000FF"+getd("WIS_"+.@Slot)+"^000000      SPL - ^0000FF"+getd("SPL_"+.@Slot)+"^000000";
+				mes "CON - ^0000FF"+getd("CON_"+.@Slot)+"^000000      CRT - ^0000FF"+getd("CRT_"+.@Slot)+"^000000";
+			}
 			mes " ";
-			mes "Remaining Points : ^0000FF"+getd( "STATS_"+.@Slot )+"^000000";
-            mes "Remaining Traits : ^0000FF"+getd( "TRAITPOINT_"+.@Slot )+"^000000";
-			set .@Option,select(( getd( "Slot_"+.@Slot+"$" ) == "" )?"":"^0000FFSwitch",
-								( getd( "Slot_"+.@Slot+"$" ) == "" )?"Save":"",
-								( getd( "Slot_"+.@Slot+"$" ) == "" )?"":"^FF0000Clear" );
-			ManageBuild( .@Slot,.@Option);
-		}while( .@Option != 1 );
+			mes "Remaining Points : ^0000FF"+StatusPoint+"^000000";
+			mes "Remaining Traits : ^0000FF"+TraitPoint+"^000000";
+		} else {
+			mes "Build : ^FF0000"+getd("Slot_"+.@Slot+"$")+"^000000";
+			mes "STR - ^0000FF"+getd("STR_"+.@Slot)+"^000000      INT - ^0000FF"+getd("INT_"+.@Slot)+"^000000";
+			mes "AGI - ^0000FF"+getd("AGI_"+.@Slot)+"^000000      DEX - ^0000FF"+getd("DEX_"+.@Slot)+"^000000";
+			mes "VIT - ^0000FF"+getd("VIT_"+.@Slot)+"^000000      LUK - ^0000FF"+getd("LUK_"+.@Slot)+"^000000";
+			mes "POW - ^0000FF"+getd("POW_"+.@Slot)+"^000000      STA - ^0000FF"+getd("STA_"+.@Slot)+"^000000";
+			mes "WIS - ^0000FF"+getd("WIS_"+.@Slot)+"^000000      SPL - ^0000FF"+getd("SPL_"+.@Slot)+"^000000";
+			mes "CON - ^0000FF"+getd("CON_"+.@Slot)+"^000000      CRT - ^0000FF"+getd("CRT_"+.@Slot)+"^000000";
+			mes " ";
+			mes "Remaining Points : ^0000FF"+getd("STATS_"+.@Slot)+"^000000";
+			mes "Remaining Traits : ^0000FF"+getd("TRAITPOINT_"+.@Slot)+"^000000";
+		}
+	
+		set .@Option,select(
+			(getd("Slot_"+.@Slot+"$") == "") ? "" : "^0000FFSwitch",
+			"Save",
+			(getd("Slot_"+.@Slot+"$") == "") ? "" : "^FF0000Clear"
+		);
+	
+		ManageBuild(.@Slot, .@Option);
+	} while(.@Option != 1);
 		break;
 	Case 2:
 		ResetStatus;
@@ -53,7 +80,7 @@ switch( getarg(1) ){
 		message strcharinfo(0),"Build has been Switched.";
 			ResetStatus;
 			set StatusPoint,getd( "STATS_"+getarg(0) );
-            set .@tp_str$,getd( "TRAITPOINT_"+getarg(0) );
+			set traitpoint, getd( "TRAITPOINT_"+getarg(0) );
 			statusup2 bStr,getd( "STR_"+getarg(0) ) - 1;
 			statusup2 bAgi,getd( "AGI_"+getarg(0) ) - 1;
 			statusup2 bVit,getd( "VIT_"+getarg(0) ) - 1;
@@ -81,7 +108,7 @@ switch( getarg(1) ){
 			setd( "CON_"+getarg(0) ),readparam(bCon);
 			setd( "CRT_"+getarg(0) ),readparam(bCrt);
 			setd( "STATS_"+getarg(0) ),StatusPoint;
-            setd( "TRAITPOINT_"+getarg(0) ),.@tp_str$;
+			setd( "TRAITPOINT_"+getarg(0) ), traitpoint;
 		if( .Length[0] < .Length[1] && .Length[0] ){
 			mes "Input a ^FF0000Name^000000 for this Slot.";
 			mes "Name Length : "+.Length[0]+" ~ "+.Length[1]+" Chars";

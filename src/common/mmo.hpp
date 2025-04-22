@@ -65,7 +65,7 @@
 * Max value tested was 265 */
 #ifndef MAX_CHARS
 	#if PACKETVER >= 20180124
-		#define MAX_CHARS 21
+		#define MAX_CHARS 27
 	#elif PACKETVER >= 20100413
 		#define MAX_CHARS 12
 	#else
@@ -563,6 +563,9 @@ struct mmo_charstatus {
 
 	t_exp base_exp,job_exp;
 	int zeny;
+
+	// Rates
+	char char_select_rate[24]; // "1x", "10x", "1x_hardcore"
 
 	short class_; ///< Player's JobID
 	unsigned int status_point,skill_point,trait_point;

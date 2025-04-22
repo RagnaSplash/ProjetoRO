@@ -2293,6 +2293,26 @@ void pc_reg_received(map_session_data *sd)
 
 	sd->vars_ok = true;
 
+	// Copia o rate salvo do banco para o estado atual do personagem
+	safestrncpy(sd->state.selected_rate, sd->status.char_select_rate, sizeof(sd->state.selected_rate));
+
+	// Aplicar multiplicadores com base na rate selecionada
+	if (strcmp(sd->state.selected_rate, "1x") == 0) {
+		sd->state.exp_rate = 0.1f;
+		sd->state.drop_rate = 1.5f;
+		sd->state.hardcore = false;
+	} else if (strcmp(sd->state.selected_rate, "10x") == 0) {
+		sd->state.exp_rate = 1.0f;
+		sd->state.drop_rate = 1.0f;
+		sd->state.hardcore = false;
+	} else if (strcmp(sd->state.selected_rate, "1x_hardcore") == 0) {
+		sd->state.exp_rate = 0.1f;
+		sd->state.drop_rate = 2.0f;
+		sd->state.hardcore = true;
+	}
+
+	// ShowInfo("Rate selecionada para %s (char_id: %d): %s\n", sd->status.name, sd->status.char_id, sd->state.selected_rate);
+	
 	sd->change_level_2nd = static_cast<unsigned char>(pc_readglobalreg(sd, add_str(JOBCHANGE2ND_VAR)));
 	sd->change_level_3rd = static_cast<unsigned char>(pc_readglobalreg(sd, add_str(JOBCHANGE3RD_VAR)));
 	sd->change_level_4th = static_cast<unsigned char>(pc_readglobalreg(sd, add_str(JOBCHANGE4TH_VAR)));
@@ -8273,6 +8293,9 @@ void pc_gainexp(map_session_data *sd, struct block_list *src, t_exp base_exp, t_
 
 	if (!(exp_flag&2)) {
 
+		base_exp = (t_exp)(base_exp * sd->state.exp_rate);
+		job_exp  = (t_exp)(job_exp  * sd->state.exp_rate);
+
 		if (!battle_config.pvp_exp && map_getmapflag(sd->bl.m, MF_PVP))  // [MouseJstr]
 			return; // no exp on pvp maps
 	
@@ -9581,6 +9604,62 @@ int pc_dead(map_session_data *sd,struct block_list *src)
 	int i=0,k=0;
 	t_tick tick = gettick();
 	struct map_data *mapdata = map_getmapdata(sd->bl.m);
+
+	// Hardcore
+	if (sd && strcmp(sd->state.selected_rate, "1x_hardcore") == 0) {
+		ShowInfo("HARDCORE: %s morreu. Aplicando punições de morte...\n", sd->status.name);
+	
+		// Remove todos os itens equipados
+		pc_unequipitem(sd, EQP_HEAD_LOW|EQP_HEAD_MID|EQP_HEAD_TOP|EQP_ARMOR|EQP_SHIELD|EQP_GARMENT|EQP_SHOES|EQP_ACC_L|EQP_ACC_R|EQP_HAND_R|EQP_HAND_L, 2);
+	
+		 // Limpa inventário
+		 for (int i = 0; i < MAX_INVENTORY; i++) {
+		 	if (sd->inventory.u.items_inventory[i].nameid)
+		 		pc_delitem(sd, i, sd->inventory.u.items_inventory[i].amount, 0, 0, LOG_TYPE_NONE);
+		 }
+	
+		// Zera o zeny
+		sd->status.zeny = 0;
+		clif_updatestatus(sd, SP_ZENY);
+
+		// Troca de Classe
+		sd->status.sex = sd->status.sex; // Apenas para garantir que o gender não mude
+		sd->status.class_ = JOB_NOVICE;
+		pc_jobchange(sd, JOB_NOVICE, 0); // 0 = não mostrar a janela de jobchange
+
+		// Reset completo do personagem (tipo 1: full reset com atributos e skills)
+		pc_resetlvl(sd, 1);
+		sd->status.status_point = 48;
+
+		// Resetar carrinho
+		for (int i = 0; i < MAX_CART; i++) {
+			if (sd->cart.u.items_cart[i].nameid) {
+				pc_cart_delitem(sd, i, sd->cart.u.items_cart[i].amount, 0, LOG_TYPE_NONE);
+			}
+		}
+		sd->cart_num = 0;
+		clif_cartlist(sd); // Garante que o cliente atualize o carrinho vazio
+
+		// Força salvamento completo
+		pc_makesavestatus(sd);
+		chrif_save(sd, CSAVE_NORMAL | CSAVE_CART | CSAVE_INVENTORY  | CSAVE_QUIT | CSAVE_QUITTING); // Garante salvar tudo, até mesmo se o jogador sair instantaneamente
+
+		// Mensagem global
+		const char* killer_name = "desconhecido";
+
+		if (src && src->type == BL_MOB) {
+			struct mob_data* md = (struct mob_data*)src;
+			killer_name = md->db->jname.c_str(); // nome em japonês (visual), use name.c_str() para o interno
+		}
+
+		char msg[CHAT_SIZE_MAX];
+		sprintf(msg, "[HARDCORE] O jogador %s morreu para %s e teve seu personagem resetado!", sd->status.name, killer_name);
+		intif_broadcast(msg, strlen(msg) + 1, BC_ALL);
+		
+		clif_displaymessage(sd->fd, "Você morreu no modo HARDCORE. Personagem resetado!");
+
+		//return 1; // Impede execução padrão de morte
+	}
 
 	// Activate Steel body if a super novice dies at 99+% exp [celest]
 	// Super Novices have no kill or die functions attached when saved by their angel

@@ -313,7 +313,8 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			"`delete_date`='%lu',`robe`='%d',`moves`='%d',`font`='%u',`uniqueitem_counter`='%u',"
 			"`hotkey_rowshift`='%d', `clan_id`='%d', `title_id`='%lu', `show_equip`='%d', `hotkey_rowshift2`='%d',"
 			"`max_ap`='%u',`ap`='%u',`trait_point`='%d',"
-			"`pow`='%d',`sta`='%d',`wis`='%d',`spl`='%d',`con`='%d',`crt`='%d'"
+			"`pow`='%d',`sta`='%d',`wis`='%d',`spl`='%d',`con`='%d',`crt`='%d',"
+			"`char_select_rate`='%s'"
 			" WHERE `account_id`='%d' AND `char_id` = '%d'",
 			schema_config.char_db, p->base_level, p->job_level,
 			p->base_exp, p->job_exp, p->zeny,
@@ -328,6 +329,7 @@ int char_mmo_char_tosql(uint32 char_id, struct mmo_charstatus* p){
 			p->hotkey_rowshift, p->clan_id, p->title_id, p->show_equip, p->hotkey_rowshift2,
 			p->max_ap, p->ap, p->trait_point,
 			p->pow, p->sta, p->wis, p->spl, p->con, p->crt,
+			p->char_select_rate,
 			p->account_id, p->char_id) )
 		{
 			Sql_ShowDebug(sql_handle);
@@ -1062,7 +1064,8 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_ev
 		"`save_map`,`save_x`,`save_y`,`partner_id`,`father`,`mother`,`child`,`fame`,`rename`,`delete_date`,`robe`, `moves`,"
 		"`unban_time`,`font`,`uniqueitem_counter`,`sex`,`hotkey_rowshift`,`clan_id`,`title_id`,`show_equip`,`hotkey_rowshift2`,"
 		"`max_ap`,`ap`,`trait_point`,`pow`,`sta`,`wis`,`spl`,`con`,`crt`,"
-		"`inventory_slots`,`body_direction`,`disable_call`,`last_instanceid`"
+		"`inventory_slots`,`body_direction`,`disable_call`,`last_instanceid`,"
+		"`char_select_rate`"
 		" FROM `%s` WHERE `char_id`=? LIMIT 1", schema_config.char_db)
 	||	SQL_ERROR == SqlStmt_BindParam(stmt, 0, SQLDT_INT, &char_id, 0)
 	||	SQL_ERROR == SqlStmt_Execute(stmt)
@@ -1142,6 +1145,7 @@ int char_mmo_char_fromsql(uint32 char_id, struct mmo_charstatus* p, bool load_ev
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 73, SQLDT_UINT8,  &p->body_direction, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 74, SQLDT_UINT8,	&p->disable_call, 0, NULL, NULL)
 	||	SQL_ERROR == SqlStmt_BindColumn(stmt, 75, SQLDT_INT,    &p->last_point_instanceid, 0, NULL, NULL)
+	||  SQL_ERROR == SqlStmt_BindColumn(stmt, 76,  SQLDT_STRING, &p->char_select_rate, sizeof(p->char_select_rate), NULL, NULL)
 	)
 	{
 		SqlStmt_ShowDebug(stmt);

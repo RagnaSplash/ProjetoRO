@@ -2046,7 +2046,7 @@ ACMD_FUNC(whosell){
 	else if (sscanf(message, "%99[^\n]", item_name) == 1){
 		s_type = 1;
 	if ((item_data = item_db.searchname(item_name)) == NULL){
-		clif_displaymessage(fd, "Item não encontrado com este nome");
+		clif_displaymessage(fd, "Item nï¿½o encontrado com este nome");
 		return -1;
 	}
 		item_id = item_data->nameid;
@@ -2062,7 +2062,7 @@ ACMD_FUNC(whosell){
 	}
 	//check item
 	if(s_type & 1 && (item_data = item_db.find(item_id)) == NULL){
-		clif_displaymessage(fd, "Não foi encontrado um item com esse ID");
+		clif_displaymessage(fd, "Nï¿½o foi encontrado um item com esse ID");
 		return -1;
 	}
 	//check refine
@@ -2126,7 +2126,7 @@ ACMD_FUNC(whosell){
                 } else {
                     price_suffix = "b";
                 }
-				snprintf(atcmd_output, CHAT_SIZE_MAX, "%s - Preço: %s%s - Quantidade: %d - %s %d,%d - %s",
+				snprintf(atcmd_output, CHAT_SIZE_MAX, "%s - Preï¿½o: %s%s - Quantidade: %d - %s %d,%d - %s",
             	item_db.create_item_link(item_tmp).c_str(),
                 formatted_price.c_str(),
 				price_suffix.c_str(),
@@ -2151,7 +2151,7 @@ ACMD_FUNC(whosell){
 		snprintf(atcmd_output, CHAT_SIZE_MAX, "Encontrado %d registro(s).", count);
 		clif_displaymessage(fd, atcmd_output);
 	} else
-		clif_displaymessage(fd, "Ninguém está vendendo agora.");
+		clif_displaymessage(fd, "Ninguï¿½m estï¿½ vendendo agora.");
 
 	return 0;
 }
@@ -2162,42 +2162,42 @@ ACMD_FUNC(chatclone)
 	char title[CHAT_SIZE_MAX], msg[CHAT_SIZE_MAX];
 	int clone_delay = battle_config.market_clone_delay; 
 	if ( sd->market_clone_id ) {
-		clif_displaymessage( fd, "Você já tem um clone de chat invocado. Digite '@chatclonekill' para remover esse clone.");
+		clif_displaymessage( fd, "Vocï¿½ jï¿½ tem um clone de chat invocado. Digite '@chatclonekill' para remover esse clone.");
 		return -1;
 	}
 	if ( sd->market_clone_delay + clone_delay > (int)time(NULL) ) {
-		safesnprintf( atcmd_output, CHAT_SIZE_MAX, "Você deve esperar %d segundo(s) antes de usar este comando novamente.", sd->market_clone_delay + clone_delay - (int)time(NULL) );
+		safesnprintf( atcmd_output, CHAT_SIZE_MAX, "Vocï¿½ deve esperar %d segundo(s) antes de usar este comando novamente.", sd->market_clone_delay + clone_delay - (int)time(NULL) );
 		clif_displaymessage( fd, atcmd_output );
 		return -1;
 	}
 	if( !battle_config.market_can_anywhere ) {
 		if ( !map_getmapflag(sd->bl.m, MF_TOWN)) {
-			clif_displaymessage( fd, "Você só pode usar @chatclone em uma cidade.");
+			clif_displaymessage( fd, "Vocï¿½ sï¿½ pode usar @chatclone em uma cidade.");
 			return -1;
 		}
 	}
 	if ( map_getcell( sd->bl.m, sd->bl.x, sd->bl.y, CELL_CHKNOCHAT ) ) {
-		clif_displaymessage( fd, "Você não pode usar @chatclone nesta área.");
+		clif_displaymessage( fd, "Vocï¿½ nï¿½o pode usar @chatclone nesta ï¿½rea.");
 		return -1;
 	}
 	if ( pc_isdead(sd) ) {
-		clif_displaymessage( fd, "Você não pode criar um clone de chat enquanto estiver morto." );
+		clif_displaymessage( fd, "Vocï¿½ nï¿½o pode criar um clone de chat enquanto estiver morto." );
 		return -1;
 	}
 	if ( npc_isnear( &sd->bl ) ) {
-		clif_displaymessage( fd, "Você não pode criar um clone de chat muito perto de um npc." );
+		clif_displaymessage( fd, "Vocï¿½ nï¿½o pode criar um clone de chat muito perto de um npc." );
 		return -1;
 	}
 	if ( !message || !*message ) {
-		clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+		clif_displaymessage( fd, "Sintaxe: @chatclone \"<Tï¿½tulo>\" \"<Mensagem>\"");
 		return -1;
 	}
 	{
 		int i = 0, j = 0, l = strlen( message ) +1;
 		char *temp = (char*)aMalloc( strlen( message ) +1 );
 		if ( message[0] != '\"' ) {
-			clif_displaymessage( fd, "Lembre-se de que o <Título> deve começar com aspas -> \"");
-			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			clif_displaymessage( fd, "Lembre-se de que o <Tï¿½tulo> deve comeï¿½ar com aspas -> \"");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Tï¿½tulo>\" \"<Mensagem>\"");
 			return -1;
 		}
 		i = 1;
@@ -2209,22 +2209,22 @@ ACMD_FUNC(chatclone)
 			i++;
 		}
 		if ( message[i] != '\"' ) {
-			clif_displaymessage( fd, "Lembre-se de que o <Título> deve terminar com aspas -> \"");
-			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			clif_displaymessage( fd, "Lembre-se de que o <Tï¿½tulo> deve terminar com aspas -> \"");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Tï¿½tulo>\" \"<Mensagem>\"");
 			return -1;
 		}
 		temp[j] = '\0';
 		safestrncpy( title, temp, CHAT_SIZE_MAX );		
 		i++;
 		if ( message[i] != ' ' ) {
-			clif_displaymessage( fd, "Lembre-se de ter [Espaço] entre o <Título> e a <Mensagem>.");
-			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			clif_displaymessage( fd, "Lembre-se de ter [Espaï¿½o] entre o <Tï¿½tulo> e a <Mensagem>.");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Tï¿½tulo>\" \"<Mensagem>\"");
 			return -1;
 		}
 		i++;
 		if ( message[i] != '\"' ) {
-			clif_displaymessage( fd, "Lembre-se de que a <Mensagem> deve começar com aspas -> \"");
-			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			clif_displaymessage( fd, "Lembre-se de que a <Mensagem> deve comeï¿½ar com aspas -> \"");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Tï¿½tulo>\" \"<Mensagem>\"");
 			return -1;
 		}
 		i++;
@@ -2238,7 +2238,7 @@ ACMD_FUNC(chatclone)
 		}
 		if ( message[i] != '\"' ) {
 			clif_displaymessage( fd, "Lembre-se de que a <Mensagem> deve terminar com aspas -> \"");
-			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Título>\" \"<Mensagem>\"");
+			clif_displaymessage( fd, "Sintaxe: @chatclone \"<Tï¿½tulo>\" \"<Mensagem>\"");
 			return -1;
 		}
 		temp[j] = '\0';
@@ -2246,11 +2246,11 @@ ACMD_FUNC(chatclone)
 		aFree( temp );
 	}
 	if ( strlen( title ) < 4 ) {
-		clif_displaymessage( fd, "O Título deve ter mais de 4 caracteres." );
+		clif_displaymessage( fd, "O Tï¿½tulo deve ter mais de 4 caracteres." );
 		return -1;
 	}
 	if ( strlen( title ) >= CHATROOM_TITLE_SIZE ) {
-		safesnprintf( atcmd_output, CHAT_SIZE_MAX, "O título não deve exceder %d caracteres.", CHATROOM_TITLE_SIZE );
+		safesnprintf( atcmd_output, CHAT_SIZE_MAX, "O tï¿½tulo nï¿½o deve exceder %d caracteres.", CHATROOM_TITLE_SIZE );
 		clif_displaymessage( fd, atcmd_output );
 		return -1;
 	}
@@ -2260,14 +2260,14 @@ ACMD_FUNC(chatclone)
 	}
 	if(battle_config.market_clone_zenycost) {
 		if(sd->status.zeny < battle_config.market_clone_zenycost) {
-			safesnprintf( atcmd_output, CHAT_SIZE_MAX, "Não é possível usar o clone de chat, não há zeny suficiente, é necessário %d zeny.", battle_config.market_clone_zenycost );
+			safesnprintf( atcmd_output, CHAT_SIZE_MAX, "Nï¿½o ï¿½ possï¿½vel usar o clone de chat, nï¿½o hï¿½ zeny suficiente, ï¿½ necessï¿½rio %d zeny.", battle_config.market_clone_zenycost );
 			clif_displaymessage( fd, atcmd_output );
 			return -1;
 		}
 	}
 	sd->market_clone_id = mob_clone_spawn_market( sd, sd->bl.m, sd->bl.x, sd->bl.y, title, msg );
 	if ( !sd->market_clone_id ) {
-		clif_displaymessage( fd, "Clone de chat não pode ser criado." );
+		clif_displaymessage( fd, "Clone de chat nï¿½o pode ser criado." );
 		return -1;
 	}
 	if(battle_config.market_clone_zenycost)
@@ -2279,7 +2279,7 @@ ACMD_FUNC(chatclone)
 
 ACMD_FUNC(chatclonekill) {
 	if ( !sd->market_clone_id ) {
-		clif_displaymessage( fd, "Você ainda não tem um clone de chat. Digite '@chat \"<Título>\" \"<Mensagem>\"' para criar um.");
+		clif_displaymessage( fd, "Vocï¿½ ainda nï¿½o tem um clone de chat. Digite '@chat \"<Tï¿½tulo>\" \"<Mensagem>\"' para criar um.");
 		return -1;
 	}
 	status_damage( NULL, map_id2bl( sd->market_clone_id ), 100, 0, 0, 5, 0 );
@@ -8076,6 +8076,11 @@ ACMD_FUNC(mobinfo)
 			base_exp += (base_exp * battle_config.vip_base_exp_increase) / 100;
 			job_exp += (job_exp * battle_config.vip_job_exp_increase) / 100;
 		}
+		
+		if (sd->state.exp_rate > 0.0f) {
+			base_exp = (t_exp)(base_exp * sd->state.exp_rate);
+			job_exp = (t_exp)(job_exp * sd->state.exp_rate);
+		}
 #ifdef RENEWAL_EXP
 		if( battle_config.atcommand_mobinfo_type ) {
 			int penalty = pc_level_penalty_mod( sd, PENALTY_EXP, mob );
@@ -8127,8 +8132,15 @@ ACMD_FUNC(mobinfo)
 			if (id == nullptr)
 				continue;
 
-			int droprate = mob_getdroprate( &sd->bl, mob, mob->dropitem[i].rate, drop_modifier );
+			int droprate = mob_getdroprate(&sd->bl, mob, mob->dropitem[i].rate, drop_modifier);
 
+			// Aplica multiplicador individual (1x, 10x, 1x_hardcore etc)
+			// if (sd->state.drop_rate > 0.0f)
+			// 	droprate = static_cast<int>(droprate * sd->state.drop_rate);
+			
+			// Cap para nÃ£o ultrapassar 100%
+			droprate = cap_value(droprate, 1, 10000);
+				
 			sprintf(atcmd_output2, " - %s  %02.02f%%", item_db.create_item_link( id ).c_str(), (float)droprate / 100);
 			strcat(atcmd_output, atcmd_output2);
 			if (++j % 3 == 0) {
@@ -8649,7 +8661,7 @@ ACMD_FUNC(whodrops)
 	}
 
 	if (!count) {
-		clif_displaymessage(fd, msg_txt(sd,19));	// Invalid item ID or name.
+		clif_displaymessage(fd, msg_txt(sd,19)); // Invalid item ID or name.
 		return -1;
 	}
 
@@ -8657,10 +8669,13 @@ ACMD_FUNC(whodrops)
 		sprintf(atcmd_output, msg_txt(sd,269), MAX_SEARCH); // Displaying first %d matches
 		clif_displaymessage(fd, atcmd_output);
 	}
+
+	std::set<uint16> shown_mobs;
+
 	for (const auto &result : item_array) {
 		std::shared_ptr<item_data> id = result.second;
 
-		sprintf(atcmd_output, msg_txt(sd,1285), item_db.create_item_link( id ).c_str(), id->nameid); // Item: '%s' (ID:%u)
+		sprintf(atcmd_output, msg_txt(sd,1285), item_db.create_item_link(id).c_str(), id->nameid); // Item: '%s' (ID:%u)
 		clif_displaymessage(fd, atcmd_output);
 
 		if (id->mob[0].chance == 0) {
@@ -8670,22 +8685,37 @@ ACMD_FUNC(whodrops)
 			sprintf(atcmd_output, msg_txt(sd,1287), MAX_SEARCH); //  - Common mobs with highest drop chance (only max %d are listed):
 			clif_displaymessage(fd, atcmd_output);
 
-			for (uint16 j=0; j < MAX_SEARCH && id->mob[j].chance > 0; j++)
-			{
+			for (uint16 j = 0; j < MAX_SEARCH && id->mob[j].chance > 0; j++) {
+				uint16 mob_id = id->mob[j].id;
+
+				if (shown_mobs.count(mob_id))
+					continue;
+
+				shown_mobs.insert(mob_id);
+
+				std::shared_ptr<s_mob_db> mob = mob_db.find(mob_id);
+				if (!mob)
+					continue;
+
 				int dropchance = id->mob[j].chance;
-				std::shared_ptr<s_mob_db> mob = mob_db.find(id->mob[j].id);
-				if(!mob) continue;
 
 #ifdef RENEWAL_DROP
-				if( battle_config.atcommand_mobinfo_type ) {
-					dropchance = dropchance * pc_level_penalty_mod( sd, PENALTY_DROP, mob ) / 100;
+				if (battle_config.atcommand_mobinfo_type) {
+					dropchance = dropchance * pc_level_penalty_mod(sd, PENALTY_DROP, mob) / 100;
 					if (dropchance <= 0 && !battle_config.drop_rate0item)
 						dropchance = 1;
 				}
 #endif
-				if (pc_isvip(sd)) // Display item rate increase for VIP
+
+				if (pc_isvip(sd))
 					dropchance += (dropchance * battle_config.vip_drop_increase) / 100;
-				sprintf(atcmd_output, "- %s (%d): %02.02f%%", mob->jname.c_str(), id->mob[j].id, dropchance/100.);
+
+				if (sd->state.drop_rate > 0.0f)
+					dropchance = static_cast<int>(dropchance * sd->state.drop_rate);
+
+				dropchance = cap_value(dropchance, 1, 10000);
+
+				sprintf(atcmd_output, "- %s (%d): %02.02f%%", mob->jname.c_str(), mob->id, dropchance / 100.);
 				clif_displaymessage(fd, atcmd_output);
 			}
 		}
@@ -8800,44 +8830,93 @@ ACMD_FUNC(mutearea)
 }
 
 
+// ACMD_FUNC(rates)
+// {
+// 	char buf[CHAT_SIZE_MAX];
+
+// 	nullpo_ret(sd);
+// 	memset(buf, '\0', sizeof(buf));
+
+// 	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1298), // Experience rates: Base %.2fx / Job %.2fx / MvP %.2fx / Quest %.2fx
+// 		(battle_config.base_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.,
+// 		(battle_config.job_exp_rate + (pc_isvip(sd) ? (battle_config.vip_job_exp_increase * battle_config.job_exp_rate) / 100 : 0)) / 100.,
+// 		(battle_config.mvp_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.,
+// 		(battle_config.quest_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.);
+// 	clif_displaymessage(fd, buf);
+// 	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1299), // Normal Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
+// 		(battle_config.item_rate_common + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_heal + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_use + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_equip + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_card + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card) / 100 : 0)) / 100.);
+// 	clif_displaymessage(fd, buf);
+// 	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1300), // Boss Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
+// 		(battle_config.item_rate_common_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common_boss) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_heal_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal_boss) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_use_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use_boss) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_equip_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip_boss) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_card_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card_boss) / 100 : 0)) / 100.);
+// 	clif_displaymessage(fd, buf);
+// 	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,27), // MVP Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
+// 		(battle_config.item_rate_common_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common_mvp) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_heal_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal_mvp) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_use_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use_mvp) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_equip_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip_mvp) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_card_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card_mvp) / 100 : 0)) / 100.);
+// 	clif_displaymessage(fd, buf);
+// 	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1301), // Other Drop Rates: MvP %.2fx / Card-Based %.2fx / Treasure %.2fx
+// 		(battle_config.item_rate_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_mvp) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_adddrop + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_adddrop) / 100 : 0)) / 100.,
+// 		(battle_config.item_rate_treasure + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_treasure) / 100 : 0)) / 100.);
+// 	clif_displaymessage(fd, buf);
+
+// 	return 0;
+// }
+
 ACMD_FUNC(rates)
 {
 	char buf[CHAT_SIZE_MAX];
+	double exp_mult = sd->state.exp_rate > 0.0f ? sd->state.exp_rate : 1.0f;
+	double drop_mult = sd->state.drop_rate > 0.0f ? sd->state.drop_rate : 1.0f;
 
 	nullpo_ret(sd);
 	memset(buf, '\0', sizeof(buf));
 
-	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1298), // Experience rates: Base %.2fx / Job %.2fx / MvP %.2fx / Quest %.2fx
-		(battle_config.base_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.,
-		(battle_config.job_exp_rate + (pc_isvip(sd) ? (battle_config.vip_job_exp_increase * battle_config.job_exp_rate) / 100 : 0)) / 100.,
-		(battle_config.mvp_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.,
-		(battle_config.quest_exp_rate + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate) / 100 : 0)) / 100.);
+	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1298), // Base/Job/MvP/Quest EXP
+		((battle_config.base_exp_rate * exp_mult) + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.base_exp_rate * exp_mult) / 100 : 0)) / 100.,
+		((battle_config.job_exp_rate * exp_mult) + (pc_isvip(sd) ? (battle_config.vip_job_exp_increase * battle_config.job_exp_rate * exp_mult) / 100 : 0)) / 100.,
+		((battle_config.mvp_exp_rate * exp_mult) + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.mvp_exp_rate * exp_mult) / 100 : 0)) / 100.,
+		((battle_config.quest_exp_rate * exp_mult) + (pc_isvip(sd) ? (battle_config.vip_base_exp_increase * battle_config.quest_exp_rate * exp_mult) / 100 : 0)) / 100.);
 	clif_displaymessage(fd, buf);
-	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1299), // Normal Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
-		(battle_config.item_rate_common + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common) / 100 : 0)) / 100.,
-		(battle_config.item_rate_heal + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal) / 100 : 0)) / 100.,
-		(battle_config.item_rate_use + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use) / 100 : 0)) / 100.,
-		(battle_config.item_rate_equip + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip) / 100 : 0)) / 100.,
-		(battle_config.item_rate_card + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card) / 100 : 0)) / 100.);
+
+	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1299), // Normal Drops
+		((battle_config.item_rate_common * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_heal * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_use * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_equip * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_card * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card * drop_mult) / 100 : 0)) / 100.);
 	clif_displaymessage(fd, buf);
-	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1300), // Boss Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
-		(battle_config.item_rate_common_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common_boss) / 100 : 0)) / 100.,
-		(battle_config.item_rate_heal_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal_boss) / 100 : 0)) / 100.,
-		(battle_config.item_rate_use_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use_boss) / 100 : 0)) / 100.,
-		(battle_config.item_rate_equip_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip_boss) / 100 : 0)) / 100.,
-		(battle_config.item_rate_card_boss + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card_boss) / 100 : 0)) / 100.);
+
+	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1300), // Boss Drops
+		((battle_config.item_rate_common_boss * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common_boss * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_heal_boss * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal_boss * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_use_boss * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use_boss * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_equip_boss * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip_boss * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_card_boss * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card_boss * drop_mult) / 100 : 0)) / 100.);
 	clif_displaymessage(fd, buf);
-	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,27), // MVP Drop Rates: Common %.2fx / Healing %.2fx / Usable %.2fx / Equipment %.2fx / Card %.2fx
-		(battle_config.item_rate_common_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common_mvp) / 100 : 0)) / 100.,
-		(battle_config.item_rate_heal_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal_mvp) / 100 : 0)) / 100.,
-		(battle_config.item_rate_use_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use_mvp) / 100 : 0)) / 100.,
-		(battle_config.item_rate_equip_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip_mvp) / 100 : 0)) / 100.,
-		(battle_config.item_rate_card_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card_mvp) / 100 : 0)) / 100.);
+
+	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,27), // MVP Drops
+		((battle_config.item_rate_common_mvp * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_common_mvp * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_heal_mvp * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_heal_mvp * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_use_mvp * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_use_mvp * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_equip_mvp * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_equip_mvp * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_card_mvp * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_card_mvp * drop_mult) / 100 : 0)) / 100.);
 	clif_displaymessage(fd, buf);
-	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1301), // Other Drop Rates: MvP %.2fx / Card-Based %.2fx / Treasure %.2fx
-		(battle_config.item_rate_mvp + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_mvp) / 100 : 0)) / 100.,
-		(battle_config.item_rate_adddrop + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_adddrop) / 100 : 0)) / 100.,
-		(battle_config.item_rate_treasure + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_treasure) / 100 : 0)) / 100.);
+
+	snprintf(buf, CHAT_SIZE_MAX, msg_txt(sd,1301), // Outros
+		((battle_config.item_rate_mvp * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_mvp * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_adddrop * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_adddrop * drop_mult) / 100 : 0)) / 100.,
+		((battle_config.item_rate_treasure * drop_mult) + (pc_isvip(sd) ? (battle_config.vip_drop_increase * battle_config.item_rate_treasure * drop_mult) / 100 : 0)) / 100.);
 	clif_displaymessage(fd, buf);
 
 	return 0;

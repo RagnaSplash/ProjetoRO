@@ -26940,6 +26940,40 @@ BUILDIN_FUNC(macro_detector) {
 	return SCRIPT_CMD_SUCCESS;
 }
 
+BUILDIN_FUNC(setcharprop) {
+	TBL_PC* sd = map_id2sd(st->rid); // corrigido
+	const char* prop = script_getstr(st, 2);
+	const char* value = script_getstr(st, 3);
+
+	if (!sd)
+		return SCRIPT_CMD_FAILURE;
+
+	if (strcmp(prop, "char_select_rate") == 0) {
+		safestrncpy(sd->status.char_select_rate, value, sizeof(sd->status.char_select_rate));
+		chrif_save(sd, 0); // salva imediatamente
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	ShowWarning("setcharprop: propriedade '%s' não reconhecida.\n", prop);
+	return SCRIPT_CMD_FAILURE;
+}
+
+BUILDIN_FUNC(getcharprop) {
+	TBL_PC* sd = map_id2sd(st->rid); // corrigido
+	if (!sd) return SCRIPT_CMD_FAILURE;
+
+	const char* prop = script_getstr(st, 2);
+
+	if (strcmp(prop, "char_select_rate") == 0) {
+		script_pushstrcopy(st, sd->status.char_select_rate);
+		return SCRIPT_CMD_SUCCESS;
+	}
+
+	ShowWarning("getcharprop: propriedade '%s' não reconhecida.\n", prop);
+	script_pushstrcopy(st, ""); // retorna string vazia
+	return SCRIPT_CMD_SUCCESS;
+}
+
 #include <custom/script.inc>
 
 // declarations that were supposed to be exported from npc_chat.cpp
@@ -27695,6 +27729,8 @@ struct script_function buildin_func[] = {
 	BUILDIN_DEF(getfamerank, "?"),
 	BUILDIN_DEF(isdead, "?"),
 	BUILDIN_DEF(macro_detector, "?"),
+	BUILDIN_DEF(setcharprop, "ss"),
+	BUILDIN_DEF(getcharprop, "s"),
 
 #include <custom/script_def.inc>
 

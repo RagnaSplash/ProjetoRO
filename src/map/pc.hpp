@@ -386,6 +386,10 @@ public:
 	//NOTE: When deciding to add a flag to state or special_state, take into consideration that state is preserved in
 	//status_calc_pc, while special_state is recalculated in each call. [Skotlex]
 	struct s_state {
+		float exp_rate;
+		float drop_rate;
+		bool hardcore;
+		char selected_rate[20];
 		unsigned int active : 1; //Marks active player (not active is logging in/out, or changing map servers)
 		unsigned int menu_or_input : 1;// if a script is waiting for feedback from the player
 		unsigned int dead_sit : 2;

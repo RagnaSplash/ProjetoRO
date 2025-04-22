@@ -1,0 +1,76 @@
+-	script	RateVipHandler	-1,{
+
+OnPCLoginEvent:
+	// Evita sobrecarga: fila para execução pós-login
+	addtimer 500, strnpcinfo(3) + "::OnDelayedLoginEvent";
+	end;
+
+OnDelayedLoginEvent:
+	// -----------------------------------
+	// APLICAR ÍCONE DE VIP CASO ATIVO
+	// -----------------------------------
+	bonus_script_clear EFST_VIPSTATE;
+	if (vip_status(1)) {
+		set .@timer, vip_status(VIP_STATUS_EXPIRE);
+		set .@duration, vip_status(VIP_STATUS_REMAINING);
+
+		bonus_script "{}", .@duration, 0, 0, EFST_VIPSTATE;
+		dispbottom "--- VIP ----";
+		dispbottom "==========================";
+		dispbottom "Duração do VIP restante: " + callfunc("Time2Str", .@timer);
+		dispbottom "==========================";
+	}
+
+	// -----------------------------------
+	// VERIFICAR RATE SELECIONADA
+	// -----------------------------------
+	set .@rate$, getcharprop("char_select_rate");
+
+	// Seleciona rate, caso não tenha
+	if (.@rate$ == "" || getstrlen(.@rate$) == 0) {
+		mes "[Seleção de Rate]";
+		mes "Escolha sua progressão:";
+		next;
+
+		switch(select(
+			"Rate 1x (+50% drop)",
+			"Rate 10x (Normal)",
+			"Rate 1x Hardcore (+100% drop, morte = deletar personagem)"
+		)) {
+			case 1:
+				setcharprop("char_select_rate", "1x");
+				bonus_script_clear EFST_ATTHASTE_CASH;
+				bonus_script "{}", 2147483647, 0, 0, EFST_ATTHASTE_CASH;
+				break;
+			case 2:
+				setcharprop("char_select_rate", "10x");
+				bonus_script_clear EFST_NOODLE_FES_4;
+				bonus_script "{}", 2147483647, 0, 0, EFST_NOODLE_FES_4;
+				break;
+			case 3:
+				mes "[Atenção]";
+				mes "Você escolheu o modo HARDCORE.";
+				mes "Morrer irá deletar o personagem. Tem certeza?";
+				if (select("Sim, estou ciente:Cancelar") == 2)
+					close;
+				setcharprop("char_select_rate", "1x_hardcore");
+				bonus_script_clear EFST_AROMA_OIL;
+				bonus_script "{}", 2147483647, 0, 0, EFST_AROMA_OIL;
+				break;
+		}
+	} else {
+		// Reaplica o ícone correspondente
+		bonus_script_clear EFST_ATTHASTE_CASH;
+		bonus_script_clear EFST_NOODLE_FES_4;
+		bonus_script_clear EFST_AROMA_OIL;
+		
+		if (.@rate$ == "1x")
+			bonus_script "{}", 2147483647, 0, 0, EFST_ATTHASTE_CASH;
+		else if (.@rate$ == "10x")
+			bonus_script "{}", 2147483647, 0, 0, EFST_NOODLE_FES_4;
+		else if (.@rate$ == "1x_hardcore")
+			bonus_script "{}", 2147483647, 0, 0, EFST_AROMA_OIL;
+	}
+
+	end;
+}
