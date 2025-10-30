@@ -49,9 +49,10 @@ Body:
       commands: true
       changedress: true
       resurrect: true
+      battlestats: true
       # customs
       whosell: true
-      trinity: true 
+      trinity: true
       chatclone: true
       chatclonekill: true
       showexp: true

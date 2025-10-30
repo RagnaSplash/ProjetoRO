@@ -131,6 +131,12 @@ Body:
   - Command: showzeny
     Help: |
       Displays/hides Zeny gained.
+  - Command: battlestats
+    Help: |
+      Displays advanced combat stats for your character:
+      - Variable/Fixed Cast (rates and additive ms)
+      - Post Cast Delay (%), Global Cooldown remaining (ms)
+      - Resistances: Elemental (física/mágica/DEF), Race, and Size
   - Command: mobsearch
     Help: |
       Params: <monster name|ID>
@@ -1019,7 +1025,7 @@ Body:
   - Command: roulette
     Help: |
       Opens the roulette UI.
-  - Command: setcard 
+  - Command: setcard
     Help: |
       Adds a card or enchant to the specific slot of the equipment.
 
